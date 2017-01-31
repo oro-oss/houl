@@ -1,0 +1,36 @@
+{
+  "name": "hole",
+  "version": "0.0.0",
+  "description": "Zero-config build tool for huge static sites",
+  "main": "lib/index.js",
+  "files": [
+    "lib"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ktsn/template-node.git"
+  },
+  "keywords": [
+    "build",
+    "zero-config",
+    "static site"
+  ],
+  "author": "katashin",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ktsn/template-node/issues"
+  },
+  "homepage": "https://github.com/ktsn/template-node#readme",
+  "scripts": {
+    "lint": "eslint lib test",
+    "test": "npm run lint && jasmine JASMINE_CONFIG_PATH=test/jasmine.json",
+    "prepublish": "npm run test"
+  },
+  "devDependencies": {
+    "babel-eslint": "^7.1.1",
+    "babel-register": "^6.18.0",
+    "eslint": "^3.12.2",
+    "eslint-config-ktsn": "^1.0.0",
+    "jasmine": "^2.5.2"
+  }
+}
