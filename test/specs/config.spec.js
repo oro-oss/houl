@@ -37,4 +37,10 @@ describe('Config', () => {
     expect(c.task.task1()).toBe('foo')
     expect(c.task.task2()).toBe('bar')
   })
+
+  it('normalizes rules options', () => {
+    const c = config('test/fixtures/normal.config.js')
+    expect(typeof c.rules.png).toBe('object')
+    expect(c.rules.png.task).toBe('imagemin')
+  })
 })

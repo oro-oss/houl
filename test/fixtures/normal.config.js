@@ -11,7 +11,8 @@ module.exports = {
     scss: {
       outputExt: 'css',
       task: 'sass'
-    }
+    },
+    png: 'imagemin'
   },
   execute: [
     {
