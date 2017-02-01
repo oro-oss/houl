@@ -49,6 +49,18 @@ describe('Config', () => {
   it('normalizes rules options', () => {
     const c = read('normal.config.js')
     expect(typeof c.rules.png).toBe('object')
+    expect(c.rules.js.task).toBe('js')
+    expect(c.rules.scss.task).toBe('sass')
     expect(c.rules.png.task).toBe('imagemin')
+  })
+
+  it('add inputExt/outptExt in each rule object', () => {
+    const c = read('normal.config.js')
+    expect(c.rules.js.inputExt).toBe('js')
+    expect(c.rules.js.outputExt).toBe('js')
+    expect(c.rules.scss.inputExt).toBe('scss')
+    expect(c.rules.scss.outputExt).toBe('css')
+    expect(c.rules.png.inputExt).toBe('png')
+    expect(c.rules.png.outputExt).toBe('png')
   })
 })
