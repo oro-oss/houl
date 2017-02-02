@@ -26,6 +26,7 @@
     "test": "npm run lint && jasmine JASMINE_CONFIG_PATH=test/jasmine.json",
     "prepublish": "npm run test"
   },
+  "bin": "bin/hole.js",
   "devDependencies": {
     "eslint": "^3.12.2",
     "eslint-config-ktsn": "^1.0.0",
@@ -33,6 +34,7 @@
   },
   "dependencies": {
     "minimatch": "^3.0.3",
-    "vinyl-fs": "^2.4.4"
+    "vinyl-fs": "^2.4.4",
+    "yargs": "^6.6.0"
   }
 }
