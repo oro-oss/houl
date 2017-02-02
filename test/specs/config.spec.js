@@ -42,8 +42,8 @@ describe('Config', () => {
 
   it('loads task file', () => {
     const c = read('normal.config.js')
-    expect(c.task.task1()).toBe('foo')
-    expect(c.task.task2()).toBe('bar')
+    expect(c.tasks.task1()).toBe('foo')
+    expect(c.tasks.task2()).toBe('bar')
   })
 
   it('normalizes rules options', () => {
