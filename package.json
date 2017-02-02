@@ -22,7 +22,7 @@
   },
   "homepage": "https://github.com/ktsn/template-node#readme",
   "scripts": {
-    "lint": "eslint lib test",
+    "lint": "eslint lib test/specs",
     "test": "npm run lint && jasmine JASMINE_CONFIG_PATH=test/jasmine.json",
     "prepublish": "npm run test"
   },
@@ -30,5 +30,8 @@
     "eslint": "^3.12.2",
     "eslint-config-ktsn": "^1.0.0",
     "jasmine": "^2.5.2"
+  },
+  "dependencies": {
+    "vinyl-fs": "^2.4.4"
   }
 }
