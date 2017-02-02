@@ -1,5 +1,5 @@
 {
-  "name": "hole",
+  "name": "houl",
   "version": "0.0.0",
   "description": "Gulp compatible build tool targeted for huge static sites",
   "main": "lib/index.js",
@@ -9,7 +9,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ktsn/hole.git"
+    "url": "git+https://github.com/ktsn/houl.git"
   },
   "keywords": [
     "build",
@@ -19,15 +19,15 @@
   "author": "katashin",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/ktsn/hole/issues"
+    "url": "https://github.com/ktsn/houl/issues"
   },
-  "homepage": "https://github.com/ktsn/hole#readme",
+  "homepage": "https://github.com/ktsn/houl#readme",
   "scripts": {
     "lint": "eslint lib test/specs",
     "test": "npm run lint && jasmine JASMINE_CONFIG_PATH=test/jasmine.json",
     "prepublish": "npm run test"
   },
-  "bin": "bin/hole.js",
+  "bin": "bin/houl.js",
   "devDependencies": {
     "eslint": "^3.12.2",
     "eslint-config-ktsn": "^1.0.0",

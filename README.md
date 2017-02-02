@@ -1,4 +1,4 @@
-# Hole
+# Houl
 
 Gulp compatible build tool targeted for huge static sites.
 
@@ -8,10 +8,10 @@ Gulp compatible build tool targeted for huge static sites.
 
 ```bash
 # npm
-$ npm install -g hole
+$ npm install -g houl
 
 # yarn
-$ yarn global add hole
+$ yarn global add houl
 ```
 
 ## License
