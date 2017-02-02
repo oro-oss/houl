@@ -29,7 +29,8 @@
   "devDependencies": {
     "eslint": "^3.12.2",
     "eslint-config-ktsn": "^1.0.0",
-    "jasmine": "^2.5.2"
+    "jasmine": "^2.5.2",
+    "minimatch": "^3.0.3"
   },
   "dependencies": {
     "vinyl-fs": "^2.4.4"

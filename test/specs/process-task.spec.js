@@ -17,7 +17,7 @@ describe('ProcessTask Stream', () => {
     })
   })
 
-  it('transform file by matched task', done => {
+  it('transforms file by matched task', done => {
     test([
       flow('es6', 'js', data => 'es6\n' + data),
       flow('scss', 'css', data => 'scss\n' + data)
@@ -29,6 +29,20 @@ describe('ProcessTask Stream', () => {
       expect(output[0].extname).toBe('.js')
       expect(output[1].contents).toBe('scss\n' + input[1].contents)
       expect(output[1].extname).toBe('.css')
+      done()
+    })
+  })
+
+  it('ignores files that is matched with exclude option', done => {
+    test([
+      flow('es6', 'js', data => 'es6\n' + data, '**/vendor/**')
+    ], [
+      file('test.es6', 'var test = "test"'),
+      file('vendor/test.es6', 'var test = "vendor"')
+    ], (input, output) => {
+      expect(output[0].contents).toBe('es6\n' + input[0].contents)
+      expect(output[0].extname).toBe('.js')
+      expect(output[1]).toEqual(input[1])
       done()
     })
   })
@@ -70,7 +84,7 @@ function test (flow, input, cb) {
   new Readable({
     objectMode: true,
     read () {
-      input.forEach(d => this.push(d))
+      input.forEach(d => this.push(merge({}, d))) // clone
       this.push(null)
     }
   }).pipe(processTask(flow))
