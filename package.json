@@ -1,7 +1,7 @@
 {
   "name": "hole",
   "version": "0.0.0",
-  "description": "Zero-config build tool for huge static sites",
+  "description": "Gulp compatible build tool targeted for huge static sites",
   "main": "lib/index.js",
   "files": [
     "lib"
@@ -12,8 +12,8 @@
   },
   "keywords": [
     "build",
-    "zero-config",
-    "static site"
+    "static site",
+    "gulp"
   ],
   "author": "katashin",
   "license": "MIT",
