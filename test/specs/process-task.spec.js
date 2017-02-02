@@ -34,6 +34,7 @@ describe('ProcessTask Stream', () => {
   })
 })
 
+// Create dummy vinyl object
 function file (pathname, contents = '') {
   return {
     path: pathname,
@@ -42,6 +43,7 @@ function file (pathname, contents = '') {
   }
 }
 
+// Create an item that will be passed as processTask argument
 function flow (inputExt, outputExt, task, exclude) {
   return {
     rule: {
@@ -60,6 +62,8 @@ function flow (inputExt, outputExt, task, exclude) {
   }
 }
 
+// Test the processTask function
+// cb will recieve the input/output array as its arguments
 function test (flow, input, cb) {
   const data = []
 
