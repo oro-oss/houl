@@ -8,7 +8,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ktsn/template-node.git"
+    "url": "git+https://github.com/ktsn/hole.git"
   },
   "keywords": [
     "build",
@@ -18,9 +18,9 @@
   "author": "katashin",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/ktsn/template-node/issues"
+    "url": "https://github.com/ktsn/hole/issues"
   },
-  "homepage": "https://github.com/ktsn/template-node#readme",
+  "homepage": "https://github.com/ktsn/hole#readme",
   "scripts": {
     "lint": "eslint lib test/specs",
     "test": "npm run lint && jasmine JASMINE_CONFIG_PATH=test/jasmine.json",
