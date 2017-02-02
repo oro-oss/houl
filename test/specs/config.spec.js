@@ -1,4 +1,5 @@
 const path = require('path')
+const Config = require('../../lib/models/config')
 const config = require('../../lib/config')
 
 const read = pathname => {
@@ -62,5 +63,11 @@ describe('Config', () => {
     expect(c.rules.scss.outputExt).toBe('css')
     expect(c.rules.png.inputExt).toBe('png')
     expect(c.rules.png.outputExt).toBe('png')
+  })
+
+  it('loads preset as a config object', () => {
+    const normal = read('normal.config.js')
+    const preset = read('preset.config.js')
+    expect(normal.preset).toEqual(preset)
   })
 })

@@ -1,5 +1,5 @@
 {
   "input": "src",
   "output": "dist",
-  "taskFile": "task.js"
+  "taskFile": "normal.task.js"
 }

@@ -1,18 +1,13 @@
 module.exports = {
-  input: './src',
-  output: './dist',
-  taskFile: './normal.task.js',
-  preset: './preset.config.js',
+  taskFile: './preset.task.js',
   rules: {
     js: {
-      task: 'js',
-      exclude: '**/vendor/**'
+      task: 'foo'
     },
     scss: {
       outputExt: 'css',
-      task: 'sass'
-    },
-    png: 'imagemin'
+      task: 'bar'
+    }
   },
   execute: [
     {
