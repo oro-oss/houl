@@ -1,5 +1,4 @@
 const path = require('path')
-const Config = require('../../lib/models/config')
 const config = require('../../lib/config')
 
 const read = pathname => {
@@ -43,19 +42,13 @@ describe('Config', () => {
 
   it('loads task file', () => {
     const c = read('normal.config.js')
-    expect(c.tasks.task1()).toBe('foo')
-    expect(c.tasks.task2()).toBe('bar')
+    expect(c.rules.js.task()).toBe('foo')
+    expect(c.rules.scss.task()).toBe('bar')
+    expect(c.rules.png.task()).toBe('baz')
   })
 
-  it('normalizes rules options', () => {
-    const c = read('normal.config.js')
-    expect(typeof c.rules.png).toBe('object')
-    expect(c.rules.js.task).toBe('js')
-    expect(c.rules.scss.task).toBe('sass')
-    expect(c.rules.png.task).toBe('imagemin')
-  })
 
-  it('add inputExt/outptExt in each rule object', () => {
+  it('add inputExt/outputExt in each rule object', () => {
     const c = read('normal.config.js')
     expect(c.rules.js.inputExt).toBe('js')
     expect(c.rules.js.outputExt).toBe('js')
@@ -65,9 +58,11 @@ describe('Config', () => {
     expect(c.rules.png.outputExt).toBe('png')
   })
 
-  it('loads preset as a config object', () => {
-    const normal = read('normal.config.js')
-    const preset = read('preset.config.js')
-    expect(normal.preset).toEqual(preset)
+  it('merges rules of preset', () => {
+    const c = read('normal.config.js')
+    expect(c.rules.js.taskName).toBe('task1')
+    expect(c.rules.scss.taskName).toBe('task2')
+    expect(c.rules.png.taskName).toBe('imagemin')
+    expect(c.rules.gif.taskName).toBe('foo')
   })
 })

@@ -5,3 +5,7 @@ exports.task1 = () => {
 exports.task2 = () => {
   return 'bar'
 }
+
+exports.imagemin = () => {
+  return 'baz'
+}

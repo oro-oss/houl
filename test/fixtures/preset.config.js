@@ -7,7 +7,8 @@ module.exports = {
     scss: {
       outputExt: 'css',
       task: 'bar'
-    }
+    },
+    gif: 'foo'
   },
   execute: [
     {

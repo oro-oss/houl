@@ -5,12 +5,12 @@ module.exports = {
   preset: './preset.config.js',
   rules: {
     js: {
-      task: 'js',
+      task: 'task1',
       exclude: '**/vendor/**'
     },
     scss: {
       outputExt: 'css',
-      task: 'sass'
+      task: 'task2'
     },
     png: 'imagemin'
   },

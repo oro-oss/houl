@@ -7,9 +7,9 @@ const processTask = require('../../lib/process-task')
 
 describe('ProcessTask Stream', () => {
   it('passes through files that does not match any rules', done => {
-    test([
-      flow('js', 'js', () => { throw new Error('Unexpected') })
-    ], [
+    test(config([
+      ['js', 'js', () => { throw new Error('Unexpected') }]
+    ]), [
       file('test.css')
     ], (input, output) => {
       expect(output).toEqual(input)
@@ -18,10 +18,10 @@ describe('ProcessTask Stream', () => {
   })
 
   it('transforms file by matched task', done => {
-    test([
-      flow('es6', 'js', data => 'es6\n' + data),
-      flow('scss', 'css', data => 'scss\n' + data)
-    ], [
+    test(config([
+      ['es6', 'js', data => 'es6\n' + data],
+      ['scss', 'css', data => 'scss\n' + data]
+    ]), [
       file('test.es6', 'var test = "es6"'),
       file('test.scss', '.foo {}')
     ], (input, output) => {
@@ -34,9 +34,9 @@ describe('ProcessTask Stream', () => {
   })
 
   it('ignores files that is matched with exclude option', done => {
-    test([
-      flow('es6', 'js', data => 'es6\n' + data, '**/vendor/**')
-    ], [
+    test(config([
+      ['es6', 'js', data => 'es6\n' + data, '**/vendor/**']
+    ]), [
       file('test.es6', 'var test = "test"'),
       file('vendor/test.es6', 'var test = "vendor"')
     ], (input, output) => {
@@ -57,28 +57,31 @@ function file (pathname, contents = '') {
   }
 }
 
-// Create an item that will be passed as processTask argument
-function flow (inputExt, outputExt, task, exclude) {
-  return {
-    rule: {
-      inputExt,
-      outputExt,
-      exclude
-    },
-    task: stream => {
-      return stream.pipe(new Transform({
-        objectMode: true,
-        transform (file, _, cb) {
-          cb(null, merge(file, { contents: task(file.contents) }))
-        }
-      }))
+// Create a config that will be passed as processTask argument
+// [[inputExt, outputExt, taskFn, exclude]]
+function config (rules) {
+  const res = {}
+  rules.forEach(rule => {
+    res[rule[0]] = {
+      inputExt: rule[0],
+      outputExt: rule[1],
+      exclude: rule[3],
+      task: stream => {
+        return stream.pipe(new Transform({
+          objectMode: true,
+          transform (file, _, cb) {
+            cb(null, merge(file, { contents: rule[2](file.contents) }))
+          }
+        }))
+      }
     }
-  }
+  })
+  return { rules: res }
 }
 
 // Test the processTask function
 // cb will recieve the input/output array as its arguments
-function test (flow, input, cb) {
+function test (config, input, cb) {
   const data = []
 
   new Readable({
@@ -87,7 +90,7 @@ function test (flow, input, cb) {
       input.forEach(d => this.push(merge({}, d))) // clone
       this.push(null)
     }
-  }).pipe(processTask(flow))
+  }).pipe(processTask(config))
     .on('data', d => data.push(d))
     .on('end', () => cb(input, data))
 }
