@@ -29,6 +29,7 @@
   },
   "bin": "bin/houl.js",
   "devDependencies": {
+    "chokidar": "^1.6.1",
     "eslint": "^3.12.2",
     "eslint-config-ktsn": "^1.0.0",
     "jasmine": "^2.5.2"
