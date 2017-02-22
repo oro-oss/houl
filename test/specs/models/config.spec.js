@@ -94,4 +94,41 @@ describe('Config model', () => {
     expect(c.rules.scss.outputExt).toBe('scss')
     expect(c.rules.png.task()).toBe('qux')
   })
+
+  it('find rule by input file path', () => {
+    const c = new Config({
+      rules: {
+        js: 'foo',
+        scss: 'bar'
+      }
+    }, {
+      foo: () => 'foo',
+      bar: () => 'bar'
+    })
+
+    let rule = c.findRuleByInput('path/to/test.js')
+    expect(rule.task()).toBe('foo')
+    rule = c.findRuleByInput('path/to/test.scss')
+    expect(rule.task()).toBe('bar')
+    rule = c.findRuleByInput('path/to/test.js.html')
+    expect(rule).toBe(null)
+  })
+
+  it('excludes matched file path for rule', () => {
+    const c = new Config({
+      rules: {
+        js: {
+          task: 'foo',
+          exclude: '**/vendor/**'
+        }
+      }
+    }, {
+      foo: () => 'foo'
+    })
+
+    let rule = c.findRuleByInput('path/to/test.js')
+    expect(rule.task()).toBe('foo')
+    rule = c.findRuleByInput('path/to/vendor/test.js')
+    expect(rule).toBe(null)
+  })
 })
