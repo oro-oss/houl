@@ -1,3 +1,5 @@
+'use strict'
+
 const path = require('path')
 const stream = require('stream')
 const Readable = stream.Readable
@@ -50,7 +52,8 @@ describe('ProcessTask Stream', () => {
 })
 
 // Create dummy vinyl object
-function file (pathname, contents = '') {
+function file (pathname, contents) {
+  contents = contents || ''
   return {
     path: pathname,
     extname: path.extname(pathname),

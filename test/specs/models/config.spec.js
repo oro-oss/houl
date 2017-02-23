@@ -1,3 +1,5 @@
+'use strict'
+
 const Config = require('../../../lib/models/config')
 
 describe('Config model', () => {

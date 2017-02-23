@@ -1,3 +1,5 @@
+'use strict'
+
 const Rule = require('../../../lib/models/rule')
 
 describe('Rule model', () => {
