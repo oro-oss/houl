@@ -1,7 +1,10 @@
+'use strict'
+
 const path = require('path')
 const stream = require('stream')
 const Readable = stream.Readable
 const Transform = stream.Transform
+const Config = require('../../lib/models/config')
 
 const processTask = require('../../lib/process-task')
 
@@ -49,7 +52,8 @@ describe('ProcessTask Stream', () => {
 })
 
 // Create dummy vinyl object
-function file (pathname, contents = '') {
+function file (pathname, contents) {
+  contents = contents || ''
   return {
     path: pathname,
     extname: path.extname(pathname),
@@ -59,24 +63,28 @@ function file (pathname, contents = '') {
 
 // Create a config that will be passed as processTask argument
 // [[inputExt, outputExt, taskFn, exclude]]
-function config (rules) {
-  const res = {}
-  rules.forEach(rule => {
-    res[rule[0]] = {
-      inputExt: rule[0],
-      outputExt: rule[1],
-      exclude: rule[3],
-      task: stream => {
-        return stream.pipe(new Transform({
-          objectMode: true,
-          transform (file, _, cb) {
-            cb(null, merge(file, { contents: rule[2](file.contents) }))
-          }
-        }))
-      }
+function config (args) {
+  const rules = {}
+  const tasks = {}
+
+  args.forEach(arg => {
+    rules[arg[0]] = {
+      task: arg[0],
+      outputExt: arg[1],
+      exclude: arg[3]
+    }
+
+    tasks[arg[0]] = stream => {
+      return stream.pipe(new Transform({
+        objectMode: true,
+        transform (file, _, cb) {
+          cb(null, merge(file, { contents: arg[2](file.contents) }))
+        }
+      }))
     }
   })
-  return { rules: res }
+
+  return new Config({ rules }, tasks)
 }
 
 // Test the processTask function
