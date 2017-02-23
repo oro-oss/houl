@@ -57,4 +57,24 @@ describe('Rule model', () => {
 
     expect(r.getOutputPath('path/to/test.scss')).toBe('path/to/test.css')
   })
+
+  describe('Empty rule', () => {
+    const empty = Rule.empty
+
+    it('has its flag', () => {
+      expect(empty.isEmpty).toBe(true)
+    })
+
+    it('passes output on getInputPath', () => {
+      expect(empty.getInputPath('/path/to/test.js')).toBe('/path/to/test.js')
+    })
+
+    it('passes input on getOutputPath', () => {
+      expect(empty.getOutputPath('/path/to/test.js')).toBe('/path/to/test.js')
+    })
+
+    it('has the task that does nothing', () => {
+      expect(empty.task('foobar')).toBe('foobar')
+    })
+  })
 })

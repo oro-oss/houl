@@ -157,9 +157,16 @@ describe('Config model', () => {
 
     let rule = c.findRuleByOutput('path/to/test.js', exists)
     expect(rule.task()).toBe('foo')
+
     rule = c.findRuleByOutput('path/to/test.css', exists)
     expect(rule.task()).toBe('bar')
+
+    // There is no matched rule but file is found -> empty rule
     rule = c.findRuleByOutput('path/to/test.scss', exists)
+    expect(rule.isEmpty).toBe(true)
+
+    // File is not found -> null
+    rule = c.findRuleByOutput('path/to/not-found.js', exists)
     expect(rule).toBe(null)
   })
 
