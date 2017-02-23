@@ -95,7 +95,7 @@ describe('Config model', () => {
     expect(c.rules.png.task()).toBe('qux')
   })
 
-  it('find rule by input file path', () => {
+  it('finds rule by input file path', () => {
     const c = new Config({
       rules: {
         js: 'foo',
@@ -114,7 +114,7 @@ describe('Config model', () => {
     expect(rule).toBe(null)
   })
 
-  it('excludes matched file path for rule', () => {
+  it('excludes matched input file path for rule', () => {
     const c = new Config({
       rules: {
         js: {
@@ -130,5 +130,79 @@ describe('Config model', () => {
     expect(rule.task()).toBe('foo')
     rule = c.findRuleByInput('path/to/vendor/test.js')
     expect(rule).toBe(null)
+  })
+
+  it('finds rule by output file path', () => {
+    function exists (pathname) {
+      return [
+        'path/to/test.js',
+        'path/to/test.scss'
+      ].indexOf(pathname) >= 0
+    }
+
+    const c = new Config({
+      input: '',
+      output: '',
+      rules: {
+        js: 'foo',
+        scss: {
+          task: 'bar',
+          outputExt: 'css'
+        }
+      }
+    }, {
+      foo: () => 'foo',
+      bar: () => 'bar'
+    })
+
+    let rule = c.findRuleByOutput('path/to/test.js', exists)
+    expect(rule.task()).toBe('foo')
+    rule = c.findRuleByOutput('path/to/test.css', exists)
+    expect(rule.task()).toBe('bar')
+    rule = c.findRuleByOutput('path/to/test.scss', exists)
+    expect(rule).toBe(null)
+  })
+
+  it('excludes matched output file path for rule', () => {
+    function exists (pathname) {
+      return [
+        'path/to/test_1.scss',
+        'path/to/vendor/test.css',
+        'path/to/vendor/test.scss',
+        'path/to/test_2.less'
+      ].indexOf(pathname) >= 0
+    }
+
+    const c = new Config({
+      input: '',
+      output: '',
+      rules: {
+        scss: {
+          task: 'foo',
+          outputExt: 'css',
+          exclude: '**/vendor/**'
+        },
+        css: 'bar',
+        less: {
+          task: 'baz',
+          outputExt: 'css'
+        }
+      }
+    }, {
+      foo: () => 'foo',
+      bar: () => 'bar',
+      baz: () => 'baz'
+    })
+
+    let rule = c.findRuleByOutput('path/to/test_1.css', exists)
+    expect(rule.task()).toBe('foo')
+
+    // Ignored by scss rule
+    rule = c.findRuleByOutput('path/to/vendor/test.css', exists)
+    expect(rule.task()).toBe('bar')
+
+    // Should not match if possible input file is not found
+    rule = c.findRuleByOutput('path/to/test_2.css', exists)
+    expect(rule.task()).toBe('baz')
   })
 })

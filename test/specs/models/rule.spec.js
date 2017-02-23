@@ -36,6 +36,17 @@ describe('Rule model', () => {
     }).toThrowError('Task "foo" is not defined')
   })
 
+  it('converts output path to input path', () => {
+    const r = new Rule({
+      task: 'foo',
+      outputExt: 'css'
+    }, 'scss', {
+      foo: () => 'foo'
+    })
+
+    expect(r.getInputPath('path/to/test.css')).toBe('path/to/test.scss')
+  })
+
   it('converts input path to output path', () => {
     const r = new Rule({
       task: 'foo',
