@@ -1,10 +1,10 @@
 'use strict'
 
 const path = require('path')
-const config = require('../../lib/config')
+const loadConfig = require('../../lib/config').loadConfig
 
 const read = pathname => {
-  return config(path.join('test/fixtures', pathname))
+  return loadConfig(path.join('test/fixtures', pathname))
 }
 
 describe('Config', () => {
