@@ -1,3 +1,5 @@
+'use strict'
+
 const dev = require('../../../lib/api').dev
 const Readable = require('stream').Readable
 const Transform = require('stream').Transform
