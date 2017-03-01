@@ -2,7 +2,7 @@
   "name": "houl",
   "version": "0.0.0",
   "description": "Gulp compatible build tool targeted for huge static sites",
-  "main": "lib/index.js",
+  "main": "lib/api.js",
   "files": [
     "bin",
     "lib"
