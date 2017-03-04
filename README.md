@@ -21,9 +21,9 @@ $ houl build
 $ houl dev
 ```
 
-`houl build` transform/copy all source files into destination directory that is written in a config file while `houl dev` starts a dev server (powered by [BrowserSync](https://browsersync.io/)). The dev server dinamically transform source file when a request is recieved, then you will not suffer the perfomance problem that depends on the size of static site.
+`houl build` transform/copy all source files into destination directory that is written in a config file while `houl dev` starts a dev server (powered by [BrowserSync](https://browsersync.io/)). The dev server dynamically transform a source file when a request is recieved, then you will not suffer the perfomance problem that depends on the size of static site.
 
-Houl loads `houl.config.js` or `houl.config.json` as a config file automatically but you prefer to load other config file, you can use `--config` (shorthand `-c`) option.
+Houl automatically loads `houl.config.js` or `houl.config.json` as a config file but you can use `--config` (shorthand `-c`) option if you prefer to load other config file.
 
 ```bash
 $ houl build -c config.js
@@ -97,7 +97,7 @@ Full example of config file:
 
 The task file contains how to transform source files by Houl. Interesting point is the task file is compatible with any [Gulp](http://gulpjs.com/) plugins. That means you can utilize rich gulp ecosystem.
 
-The task file must be `.js` file and you need to export some functions. The exported functions receive a stream that will send a part of source files then you must return a piped stream that transforms source files. You can use any Gulp plugins to pipe stream:
+The task file must be `.js` file and you need to export some functions. The exported functions receive a stream that will send source files then you must return a piped stream that transforms them. You can use any Gulp plugins to pipe the stream:
 
 ```javascript
 const babel = require('gulp-babel')
