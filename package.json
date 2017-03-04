@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "description": "Gulp compatible build tool targeted for huge static sites",
   "main": "lib/api.js",
+  "bin": "bin/houl.js",
   "files": [
     "bin",
     "lib"
@@ -12,7 +13,7 @@
     "url": "git+https://github.com/ktsn/houl.git"
   },
   "keywords": [
-    "build",
+    "build tool",
     "static site",
     "gulp"
   ],
@@ -23,11 +24,10 @@
   },
   "homepage": "https://github.com/ktsn/houl#readme",
   "scripts": {
-    "lint": "eslint lib test/specs",
+    "lint": "eslint bin lib test/specs",
     "test": "npm run lint && jasmine JASMINE_CONFIG_PATH=test/jasmine.json",
-    "prepublish": "npm run test"
+    "prepublish": "npm run lint && npm run test"
   },
-  "bin": "bin/houl.js",
   "devDependencies": {
     "chokidar": "^1.6.1",
     "eslint": "^3.12.2",
