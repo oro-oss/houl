@@ -1,0 +1,15 @@
+{
+  "input": "src",
+  "output": "dist",
+  "taskFile": "houl.task.js",
+  "rules": {
+    "js": {
+      "task": "js",
+      "exclude": "**/vendor/**"
+    },
+    "scss": {
+      "task": "sass",
+      "outputExt": "css"
+    }
+  }
+}
