@@ -30,6 +30,52 @@ describe('Config model', () => {
     expect(e.output).toBe('/path/to/dist/img/share')
   })
 
+  it('retain exclude field', () => {
+    const c = new Config({
+      exclude: '**/_*'
+    }, {})
+
+    expect(c.exclude).toBe('**/_*')
+  })
+
+  it('creates vinyl input', () => {
+    const c = new Config({
+      input: 'src'
+    }, {}, {
+      base: '/path/to'
+    })
+    expect(c.vinylInput).toEqual(['/path/to/src/**/*'])
+  })
+
+  it('includes `exclude` pattern into vinyl input', () => {
+    const c = new Config({
+      input: 'src',
+      exclude: '**/_*'
+    }, {}, {
+      base: '/path/to/'
+    })
+    expect(c.vinylInput).toEqual([
+      '/path/to/src/**/*',
+      '!**/_*'
+    ])
+  })
+
+  it('isExclude always returns false if `exclude` is empty', () => {
+    const c = new Config({}, {})
+
+    expect(c.isExclude('/path/to/foo.css')).toBe(false)
+    expect(c.isExclude('')).toBe(false)
+  })
+
+  it('test whether a path matches exclude pattern', () => {
+    const c = new Config({
+      exclude: '**/_*'
+    }, {})
+
+    expect(c.isExclude('/path/to/file.js')).toBe(false)
+    expect(c.isExclude('path/to/_internal.js')).toBe(true)
+  })
+
   it('loads tasks', () => {
     const c = new Config({
       rules: {

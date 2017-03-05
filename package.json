@@ -26,7 +26,7 @@
   "scripts": {
     "lint": "eslint bin lib test/specs",
     "test": "npm run lint && jasmine JASMINE_CONFIG_PATH=test/jasmine.json",
-    "prepublish": "npm run lint && npm run test"
+    "prepublish": "npm run test"
   },
   "devDependencies": {
     "eslint": "^3.12.2",
