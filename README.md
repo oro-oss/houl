@@ -42,6 +42,7 @@ Key      | Description
 -------- | --------------------------------------------------------
 input    | Path to source directory
 output   | Path to destination directory
+exclude  | Glob pattern of files that will be ignored from input
 taskFile | Path to task file that is described in the later section
 preset   | Package name or directory to preset
 rules    | Specify how to transform source files
@@ -78,6 +79,7 @@ Full example of config file:
 {
   "input": "./src",
   "output": "./dist",
+  "exclude": "**/_*",
   "taskFile": "./houl.task.js",
   "preset": "houl-preset-foo",
   "rules": {
