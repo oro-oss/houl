@@ -137,10 +137,10 @@ exports.scripts = stream => {
 }
 ```
 
-You can enable production mode by writing `NODE_ENV=production` before houl command:
+You can enable production mode by adding `--production` flag with `build` command:
 
 ```bash
-$ NODE_ENV=production houl build
+$ houl build --production
 ```
 
 ## License
