@@ -57,7 +57,7 @@ Key       | Description
 --------- | -----------------------------------------------------------------------------
 task      | Task name that will apply transformations
 outputExt | Extension of output files. If omitted, it is same as input files' extensions.
-exclude   | Glob pattern of files that you want to ignore
+exclude   | Glob pattern of files that will not be applied the rule
 
 #### Preset
 
