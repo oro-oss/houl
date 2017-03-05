@@ -1,5 +1,6 @@
 {
   "input": "src",
+  "exclude": "**/_*",
   "output": "dist",
   "taskFile": "houl.task.js",
   "rules": {

@@ -1,6 +1,8 @@
+@import 'internal/variables';
+
 .foo {
   .bar {
-    color: red;
+    color: $color;
   }
 }
 
