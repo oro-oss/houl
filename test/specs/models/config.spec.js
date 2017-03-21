@@ -1,5 +1,6 @@
 'use strict'
 
+const normalize = require('normalize-path')
 const Config = require('../../../lib/models/config')
 
 describe('Config model', () => {
@@ -10,8 +11,8 @@ describe('Config model', () => {
     }, {}, {
       base: '/path/to/base'
     })
-    expect(c.input).toBe('/path/to/base/path/to/src')
-    expect(c.output).toBe('/path/to/base/to/dist')
+    expect(c.input).toBePath('/path/to/base/path/to/src')
+    expect(c.output).toBePath('/path/to/base/to/dist')
   })
 
   it('resolves paths in execute options based on cwd', () => {
@@ -26,8 +27,8 @@ describe('Config model', () => {
       base: '/path/to/'
     })
     const e = c.execute[0]
-    expect(e.input).toBe('/path/to/src/img/_assets/*.svg')
-    expect(e.output).toBe('/path/to/dist/img/share')
+    expect(e.input).toBePath('/path/to/src/img/_assets/*.svg')
+    expect(e.output).toBePath('/path/to/dist/img/share')
   })
 
   it('retain exclude field', () => {
@@ -35,7 +36,7 @@ describe('Config model', () => {
       exclude: '**/_*'
     }, {})
 
-    expect(c.exclude).toBe('**/_*')
+    expect(c.exclude).toBePath('**/_*')
   })
 
   it('creates vinyl input', () => {
@@ -44,7 +45,8 @@ describe('Config model', () => {
     }, {}, {
       base: '/path/to'
     })
-    expect(c.vinylInput).toEqual(['/path/to/src/**/*'])
+    expect(c.vinylInput.length).toBe(1)
+    expect(c.vinylInput[0]).toBePath('/path/to/src/**/*')
   })
 
   it('includes `exclude` pattern into vinyl input', () => {
@@ -54,10 +56,9 @@ describe('Config model', () => {
     }, {}, {
       base: '/path/to/'
     })
-    expect(c.vinylInput).toEqual([
-      '/path/to/src/**/*',
-      '!**/_*'
-    ])
+    expect(c.vinylInput.length).toBe(2)
+    expect(c.vinylInput[0]).toBePath('/path/to/src/**/*')
+    expect(c.vinylInput[1]).toBePath('!**/_*')
   })
 
   it('isExclude always returns false if `exclude` is empty', () => {
@@ -185,7 +186,7 @@ describe('Config model', () => {
       return [
         'path/to/test.js',
         'path/to/test.scss'
-      ].indexOf(pathname) >= 0
+      ].indexOf(normalize(pathname)) >= 0
     }
 
     const c = new Config({
@@ -225,7 +226,7 @@ describe('Config model', () => {
         'path/to/vendor/test.css',
         'path/to/vendor/test.scss',
         'path/to/test_2.less'
-      ].indexOf(pathname) >= 0
+      ].indexOf(normalize(pathname)) >= 0
     }
 
     const c = new Config({
