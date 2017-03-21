@@ -22,8 +22,12 @@ describe('ProcessTask Stream', () => {
 
   it('transforms file by matched task', done => {
     test(config([
-      ['es6', 'js', data => 'es6\n' + data],
-      ['scss', 'css', data => 'scss\n' + data]
+      ['es6', 'js', file => {
+        file.contents = 'es6\n' + file.contents
+      }],
+      ['scss', 'css', file => {
+        file.contents = 'scss\n' + file.contents
+      }]
     ]), [
       file('test.es6', 'var test = "es6"'),
       file('test.scss', '.foo {}')
@@ -38,7 +42,9 @@ describe('ProcessTask Stream', () => {
 
   it('ignores files that is matched with exclude option', done => {
     test(config([
-      ['es6', 'js', data => 'es6\n' + data, '**/vendor/**']
+      ['es6', 'js', file => {
+        file.contents = 'es6\n' + file.contents
+      }, '**/vendor/**']
     ]), [
       file('test.es6', 'var test = "test"'),
       file('vendor/test.es6', 'var test = "vendor"')
@@ -78,7 +84,7 @@ function config (args) {
       return stream.pipe(new Transform({
         objectMode: true,
         transform (file, _, cb) {
-          cb(null, merge(file, { contents: arg[2](file.contents) }))
+          cb(null, arg[2](file) || file)
         }
       }))
     }
