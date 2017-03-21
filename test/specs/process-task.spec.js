@@ -55,6 +55,22 @@ describe('ProcessTask Stream', () => {
       done()
     })
   })
+
+  it('transforms extname after executing task', done => {
+    let called = false
+    test(config([
+      ['es6', 'js', file => {
+        expect(file.extname).toBe('.es6')
+        called = true
+      }]
+    ]), [
+      file('test.es6', 'const test = "test"')
+    ], (input, output) => {
+      expect(output[0].extname).toBe('.js')
+      expect(called).toBe(true)
+      done()
+    })
+  })
 })
 
 // Create dummy vinyl object
