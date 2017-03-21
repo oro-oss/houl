@@ -82,4 +82,9 @@ describe('DepResolver', () => {
       '/foo.js'
     ])
   })
+
+  it('returns empty array if target is not registered', () => {
+    const r = new DepResolver(() => ['noop'])
+    expect(r.resolve('/test.js')).toEqual([])
+  })
 })
