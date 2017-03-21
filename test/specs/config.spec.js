@@ -1,6 +1,7 @@
 'use strict'
 
 const path = require('path')
+const normalize = require('normalize-path')
 const loadConfig = require('../../lib/config').loadConfig
 const findConfig = require('../../lib/config').findConfig
 
@@ -24,18 +25,18 @@ describe('Config', () => {
 
   it('search config file', () => {
     function exists (pathname) {
-      return '/path/houl.config.js' === pathname
+      return '/path/houl.config.js' === normalize(pathname)
     }
 
-    expect(findConfig('/path/to/project', exists)).toBe('/path/houl.config.js')
+    expect(findConfig('/path/to/project', exists)).toBePath('/path/houl.config.js')
   })
 
   it('also search json config file', () => {
     function exists (pathname) {
-      return '/path/houl.config.json' === pathname
+      return '/path/houl.config.json' === normalize(pathname)
     }
 
-    expect(findConfig('/path/to/project', exists)).toBe('/path/houl.config.json')
+    expect(findConfig('/path/to/project', exists)).toBePath('/path/houl.config.json')
   })
 
   it('prefers js config', () => {
@@ -43,15 +44,15 @@ describe('Config', () => {
       return [
         '/path/to/houl.config.json',
         '/path/to/houl.config.js'
-      ].indexOf(pathname) >= 0
+      ].indexOf(normalize(pathname)) >= 0
     }
 
-    expect(findConfig('/path/to/', exists)).toBe('/path/to/houl.config.js')
+    expect(findConfig('/path/to/', exists)).toBePath('/path/to/houl.config.js')
   })
 
   it('returns null if not found', () => {
     function exists (pathname) {
-      return '/path/to/houl.config.json' === pathname
+      return '/path/to/houl.config.json' === normalize(pathname)
     }
 
     expect(findConfig('/path/other/project', exists)).toBe(null)
