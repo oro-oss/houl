@@ -70,11 +70,23 @@ describe('Config model', () => {
 
   it('test whether a path matches exclude pattern', () => {
     const c = new Config({
+      input: '/',
       exclude: '**/_*'
     }, {})
 
     expect(c.isExclude('/path/to/file.js')).toBe(false)
     expect(c.isExclude('path/to/_internal.js')).toBe(true)
+  })
+
+  it('should not match ancestor path of the input directory for exclude', () => {
+    const c = new Config({
+      input: '/path/to/src',
+      exclude: '**/to/**'
+    }, {})
+
+    expect(c.isExclude('/path/to/src/foo/bar.js')).toBe(false)
+    expect(c.isExclude('/path/to/src/to/foo/bar.js')).toBe(true)
+    expect(c.isExclude('path/to/relative.js')).toBe(true)
   })
 
   it('loads tasks', () => {
