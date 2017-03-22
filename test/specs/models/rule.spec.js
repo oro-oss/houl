@@ -7,7 +7,10 @@ describe('Rule model', () => {
     const r = new Rule({
       task: 'foo',
       outputExt: 'css',
-      exclude: '**/vendor/**'
+      exclude: '**/vendor/**',
+      progeny: {
+        rootPath: 'path/to/root'
+      }
     }, 'scss', {
       foo: () => 'foo',
       bar: () => 'bar'
@@ -18,6 +21,10 @@ describe('Rule model', () => {
     expect(r.inputExt).toBe('scss')
     expect(r.outputExt).toBe('css')
     expect(r.exclude).toBe('**/vendor/**')
+    expect(r.progeny).toEqual({
+      extension: 'scss',
+      rootPath: 'path/to/root'
+    })
   })
 
   it('deals with string format', () => {
