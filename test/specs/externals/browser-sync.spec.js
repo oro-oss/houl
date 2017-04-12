@@ -57,11 +57,20 @@ describe('Using browsersync', () => {
     register: td.function()
   }
 
-  create(config, {
-    port: 51234,
-    open: false,
-    logLevel: 'silent'
-  }, mockResolver)
+  let bs
+  beforeAll(done => {
+    bs = create(config, {
+      port: 51234,
+      open: false,
+      logLevel: 'silent'
+    }, mockResolver)
+
+    bs.emitter.on('init', done)
+  })
+
+  afterAll(() => {
+    bs.exit()
+  })
 
   it('starts dev server by the given port', done => {
     http.get(reqTo('/'), waitForData((res, data) => {
