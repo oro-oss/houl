@@ -24,11 +24,14 @@
   },
   "homepage": "https://github.com/ktsn/houl#readme",
   "scripts": {
+    "dev": "chokidar \"lib/**/*.js\" \"test/**/*.js\" -c \"npm run test:unit\" --silent --initial",
     "lint": "eslint bin lib test/specs",
-    "test": "npm run lint && jasmine JASMINE_CONFIG_PATH=test/jasmine.json",
+    "test": "npm run lint && npm run test:unit",
+    "test:unit": "jasmine JASMINE_CONFIG_PATH=test/jasmine.json",
     "prepublish": "npm run test"
   },
   "devDependencies": {
+    "chokidar-cli": "^1.2.0",
     "eslint": "^3.12.2",
     "eslint-config-ktsn": "^1.0.0",
     "jasmine": "^2.5.2",
