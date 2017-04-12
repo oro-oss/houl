@@ -8,7 +8,7 @@ const td = require('testdouble')
 const Config = require('../../../lib/models/config')
 const create = require('../../../lib/externals/browser-sync')
 
-const base = path.resolve(__dirname, '../../../example/src')
+const base = path.resolve(__dirname, '../../../example')
 
 function reqTo (pathname) {
   return 'http://localhost:51234' + pathname
@@ -33,7 +33,7 @@ function expectDataToBeFile (data, filename) {
 
 describe('Using browsersync', () => {
   const config = new Config({
-    input: 'src',
+    input: '',
     output: 'dist',
     rules: {
       js: 'js'
@@ -49,9 +49,7 @@ describe('Using browsersync', () => {
         }
       }))
     }
-  }, {
-    base: path.resolve(__dirname, '../../../example')
-  })
+  }, { base })
 
   const mockResolver = {
     register: td.function()
@@ -73,30 +71,31 @@ describe('Using browsersync', () => {
   })
 
   it('starts dev server by the given port', done => {
-    http.get(reqTo('/'), waitForData((res, data) => {
+    http.get(reqTo('/src/'), waitForData((res, data) => {
       expect(res.statusCode).toBe(200)
-      expectDataToBeFile(data, 'index.html')
+      expectDataToBeFile(data, 'src/index.html')
       done()
     }))
   })
 
   it('executes corresponding task to transform sources', done => {
-    http.get(reqTo('/js/index.js'), waitForData((res, data) => {
+    http.get(reqTo('/src/js/index.js'), waitForData((res, data) => {
       expect(data).toMatch(/^\*\*transformed\*\*\n/)
       done()
     }))
   })
 
-  it('fills trailing slash if the specified path indicates a directory', done => {
-    http.get(reqTo(''), waitForData((res, data) => {
-      expectDataToBeFile(data, 'index.html')
+  it('redirects if the specified path does not have trailing slash and it points to a directory', done => {
+    http.get(reqTo('/src'), res => {
+      expect(res.statusCode).toBe(301)
+      expect(res.headers.location).toBe('/src/')
       done()
-    }))
+    })
   })
 
   it('registers requested files to dep resolver', done => {
-    http.get(reqTo('/css/index.scss'), () => {
-      const absPath = path.resolve(base, 'css/index.scss')
+    http.get(reqTo('/src/css/index.scss'), () => {
+      const absPath = path.resolve(base, 'src/css/index.scss')
       const content = fs.readFileSync(absPath, 'utf8')
       td.verify(mockResolver.register(absPath, content))
       done()
