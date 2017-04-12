@@ -8,6 +8,8 @@ const td = require('testdouble')
 const Config = require('../../../lib/models/config')
 const create = require('../../../lib/externals/browser-sync')
 
+const base = path.resolve(__dirname, '../../../example/src')
+
 function reqTo (pathname) {
   return 'http://localhost:51234' + pathname
 }
@@ -25,7 +27,7 @@ function waitForData (fn) {
 
 function expectDataToBeFile (data, filename) {
   expect(data).toBe(
-    fs.readFileSync(path.resolve(__dirname, '../../../example/src', filename), 'utf8')
+    fs.readFileSync(path.join(base, filename), 'utf8')
   )
 }
 
@@ -81,5 +83,14 @@ describe('Using browsersync', () => {
       expectDataToBeFile(data, 'index.html')
       done()
     }))
+  })
+
+  it('registers requested files to dep resolver', done => {
+    http.get(reqTo('/css/index.scss'), () => {
+      const absPath = path.resolve(base, 'css/index.scss')
+      const content = fs.readFileSync(absPath, 'utf8')
+      td.verify(mockResolver.register(absPath, content))
+      done()
+    })
   })
 })
