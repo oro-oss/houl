@@ -87,4 +87,33 @@ describe('DepResolver', () => {
     const r = new DepResolver(() => ['noop'])
     expect(r.resolve('/test.js')).toEqual([])
   })
+
+  it('serializes deps', () => {
+    const r = new DepResolver(() => ['/baz.js'])
+
+    // foo --> baz
+    // bar -^
+    r.register('/foo.js', '')
+    r.register('/bar.js', '')
+
+    expect(r.serialize()).toBe(JSON.stringify({
+      '/foo.js': ['/baz.js'],
+      '/baz.js': [],
+      '/bar.js': ['/baz.js']
+    }))
+  })
+
+  it('deserializes deps', () => {
+    const r = new DepResolver(() => [])
+
+    r.deserialize(JSON.stringify({
+      '/foo.js': ['/baz.js'],
+      '/bar.js': ['/baz.js']
+    }))
+
+    expect(r.resolve('/baz.js')).toEqual([
+      '/foo.js',
+      '/bar.js'
+    ])
+  })
 })
