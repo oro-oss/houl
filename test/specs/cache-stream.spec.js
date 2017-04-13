@@ -177,6 +177,41 @@ describe('Cache Stream', () => {
       .pipe(assertStream([]))
       .on('finish', done)
   })
+
+  it('updates the caches of all nested dependencies', done => {
+    const cache = new Cache()
+    const depResolver = new DepResolver(() => ['bar.txt', 'baz.txt'])
+
+    cache.deserialize({
+      'foo.txt': 'abc',
+      'bar.txt': 'edf',
+      'baz.txt': 'ghi'
+    })
+
+    depResolver.deserialize({
+      'foo.txt': ['bar.txt', 'baz.txt']
+    })
+
+    const mockFs = pathName => {
+      return {
+        'foo.txt': 'abc',
+        'bar.txt': 'updated',
+        'baz.txt': 'updated'
+      }[pathName]
+    }
+
+    source([
+      { path: 'foo.txt', contents: 'abc' }
+    ]).pipe(cacheStream(cache, depResolver, mockFs))
+      .on('finish', () => {
+        expect(cache.serialize()).toEqual({
+          'foo.txt': 'abc',
+          'bar.txt': 'updated',
+          'baz.txt': 'updated'
+        })
+        done()
+      })
+  })
 })
 
 function assertStream (expected) {
