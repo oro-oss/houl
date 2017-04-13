@@ -46,4 +46,15 @@ describe('Cache', () => {
     expect(cache.test('foo.txt', 'abc')).toBe(true)
     expect(cache.test('bar.txt', 'def')).toBe(true)
   })
+
+  it('hashes cache data by provided transformer', () => {
+    const cache = new Cache(content => 'abc' + content)
+
+    cache.register('foo.txt', 'def')
+
+    expect(cache.test('foo.txt', 'def')).toBe(true)
+    expect(cache.serialize()).toEqual(JSON.stringify({
+      'foo.txt': 'abcdef'
+    }))
+  })
 })
