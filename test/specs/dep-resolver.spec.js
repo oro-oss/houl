@@ -88,6 +88,21 @@ describe('DepResolver', () => {
     expect(r.getInDeps('/test.js')).toEqual([])
   })
 
+  it('provides nested out deps', () => {
+    const r = new DepResolver((_, content) => [content])
+
+    // a --> b -> d
+    // c -^
+    r.register('/a.js', '/b.js')
+    r.register('/c.js', '/b.js')
+    r.register('/b.js', '/d.js')
+
+    expect(r.getOutDeps('/a.js')).toEqual([
+      '/b.js',
+      '/d.js'
+    ])
+  })
+
   it('serializes deps', () => {
     const r = new DepResolver(() => ['/baz.js'])
 
