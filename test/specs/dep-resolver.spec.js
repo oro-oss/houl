@@ -8,14 +8,14 @@ describe('DepResolver', () => {
 
     // origin.js -depends-> dep.js
     r.register('/path/to/origin.js', '')
-    expect(r.resolve('/path/to/dep.js')).toEqual([
+    expect(r.getInDeps('/path/to/dep.js')).toEqual([
       '/path/to/origin.js'
     ])
 
     // origin.js  -depends--> dep.js
     // another.js -depends-^
     r.register('/path/to/another.js', '')
-    expect(r.resolve('/path/to/dep.js')).toEqual([
+    expect(r.getInDeps('/path/to/dep.js')).toEqual([
       '/path/to/origin.js',
       '/path/to/another.js'
     ])
@@ -27,7 +27,7 @@ describe('DepResolver', () => {
     r.register('/path/to/origin.js', '')
     r.register('/path/to/origin.js', '')
 
-    expect(r.resolve('/path/to/dep.js')).toEqual([
+    expect(r.getInDeps('/path/to/dep.js')).toEqual([
       '/path/to/origin.js'
     ])
   })
@@ -41,7 +41,7 @@ describe('DepResolver', () => {
     r.register('/c.js', '/b.js')
     r.register('/b.js', '/d.js')
 
-    expect(r.resolve('/d.js')).toEqual([
+    expect(r.getInDeps('/d.js')).toEqual([
       '/b.js',
       '/a.js',
       '/c.js'
@@ -56,7 +56,7 @@ describe('DepResolver', () => {
     r.register('/b.js', '/c.js')
     r.register('/c.js', '/a.js')
 
-    expect(r.resolve('/a.js')).toEqual([
+    expect(r.getInDeps('/a.js')).toEqual([
       '/c.js',
       '/b.js'
     ])
@@ -69,23 +69,23 @@ describe('DepResolver', () => {
     // bar -^
     r.register('/foo.js', '/test.js')
     r.register('/bar.js', '/test.js')
-    expect(r.resolve('/test.js')).toEqual([
+    expect(r.getInDeps('/test.js')).toEqual([
       '/foo.js',
       '/bar.js'
     ])
 
     r.register('/foo.js', '/test2.js')
-    expect(r.resolve('/test.js')).toEqual([
+    expect(r.getInDeps('/test.js')).toEqual([
       '/bar.js'
     ])
-    expect(r.resolve('/test2.js')).toEqual([
+    expect(r.getInDeps('/test2.js')).toEqual([
       '/foo.js'
     ])
   })
 
   it('returns empty array if target is not registered', () => {
     const r = new DepResolver(() => ['noop'])
-    expect(r.resolve('/test.js')).toEqual([])
+    expect(r.getInDeps('/test.js')).toEqual([])
   })
 
   it('serializes deps', () => {
@@ -111,7 +111,7 @@ describe('DepResolver', () => {
       '/bar.js': ['/baz.js']
     }))
 
-    expect(r.resolve('/baz.js')).toEqual([
+    expect(r.getInDeps('/baz.js')).toEqual([
       '/foo.js',
       '/bar.js'
     ])
