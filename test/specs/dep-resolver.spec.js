@@ -111,20 +111,20 @@ describe('DepResolver', () => {
     r.register('/foo.js', '')
     r.register('/bar.js', '')
 
-    expect(r.serialize()).toBe(JSON.stringify({
+    expect(r.serialize()).toEqual({
       '/foo.js': ['/baz.js'],
-      '/baz.js': [],
-      '/bar.js': ['/baz.js']
-    }))
+      '/bar.js': ['/baz.js'],
+      '/baz.js': []
+    })
   })
 
   it('deserializes deps', () => {
     const r = new DepResolver(() => [])
 
-    r.deserialize(JSON.stringify({
+    r.deserialize({
       '/foo.js': ['/baz.js'],
       '/bar.js': ['/baz.js']
-    }))
+    })
 
     expect(r.getInDeps('/baz.js')).toEqual([
       '/foo.js',

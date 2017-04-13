@@ -46,14 +46,14 @@ describe('Cache Stream', () => {
     const cache = new Cache()
     const depResolver = new DepResolver(() => ['bar.txt'])
 
-    cache.deserialize(JSON.stringify({
+    cache.deserialize({
       'foo.txt': 'abc',
       'bar.txt': 'def'
-    }))
+    })
 
-    depResolver.deserialize(JSON.stringify({
+    depResolver.deserialize({
       'foo.txt': ['bar.txt']
-    }))
+    })
 
     const mockFs = pathName => {
       return {
@@ -80,15 +80,15 @@ describe('Cache Stream', () => {
     const cache = new Cache()
     const depResolver = new DepResolver(() => ['baz.txt'])
 
-    cache.deserialize(JSON.stringify({
+    cache.deserialize({
       'foo.txt': 'abc',
       'bar.txt': 'def',
       'baz.txt': 'ghi'
-    }))
+    })
 
-    depResolver.deserialize(JSON.stringify({
+    depResolver.deserialize({
       'foo.txt': ['bar.txt']
-    }))
+    })
 
     const mockFs = pathName => {
       return {
@@ -116,14 +116,14 @@ describe('Cache Stream', () => {
     const cache = new Cache()
     const depResolver = new DepResolver(() => ['bar.txt'])
 
-    cache.deserialize(JSON.stringify({
+    cache.deserialize({
       'foo.txt': 'abc',
       'bar.txt': 'def'
-    }))
+    })
 
-    depResolver.deserialize(JSON.stringify({
+    depResolver.deserialize({
       'foo.txt': ['bar.txt']
-    }))
+    })
 
     const mockFs = pathName => {
       return {
@@ -150,14 +150,14 @@ describe('Cache Stream', () => {
     const cache = new Cache()
     const depResolver = new DepResolver(() => ['bar.txt'])
 
-    cache.deserialize(JSON.stringify({
+    cache.deserialize({
       'foo.txt': 'abc',
       'bar.txt': 'edf'
-    }))
+    })
 
-    depResolver.deserialize(JSON.stringify({
+    depResolver.deserialize({
       'foo.txt': ['bar.txt']
-    }))
+    })
 
     const mockFs = pathName => {
       return {

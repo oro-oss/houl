@@ -29,19 +29,19 @@ describe('Cache', () => {
     cache.register('foo.txt', 'abc')
     cache.register('bar.txt', 'def')
 
-    expect(cache.serialize()).toEqual(JSON.stringify({
+    expect(cache.serialize()).toEqual({
       'foo.txt': 'abc',
       'bar.txt': 'def'
-    }))
+    })
   })
 
   it('deserializes cache map', () => {
     const cache = new Cache()
 
-    cache.deserialize(JSON.stringify({
+    cache.deserialize({
       'foo.txt': 'abc',
       'bar.txt': 'def'
-    }))
+    })
 
     expect(cache.test('foo.txt', 'abc')).toBe(true)
     expect(cache.test('bar.txt', 'def')).toBe(true)
@@ -53,8 +53,8 @@ describe('Cache', () => {
     cache.register('foo.txt', 'def')
 
     expect(cache.test('foo.txt', 'def')).toBe(true)
-    expect(cache.serialize()).toEqual(JSON.stringify({
+    expect(cache.serialize()).toEqual({
       'foo.txt': 'abcdef'
-    }))
+    })
   })
 })
