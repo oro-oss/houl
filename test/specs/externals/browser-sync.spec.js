@@ -3,8 +3,8 @@
 const path = require('path')
 const fs = require('fs')
 const http = require('http')
-const Transform = require('stream').Transform
 const td = require('testdouble')
+const transform = require('../../helpers').transform
 const Config = require('../../../lib/models/config')
 const create = require('../../../lib/externals/browser-sync')
 
@@ -40,13 +40,10 @@ describe('Using browsersync', () => {
     }
   }, {
     js: stream => {
-      return stream.pipe(new Transform({
-        objectMode: true,
-        transform (file, encoding, callback) {
-          const source = file.contents.toString()
-          file.contents = Buffer.from('**transformed**\n' + source)
-          callback(null, file)
-        }
+      return stream.pipe(transform((file, encoding, callback) => {
+        const source = file.contents.toString()
+        file.contents = Buffer.from('**transformed**\n' + source)
+        callback(null, file)
       }))
     }
   }, { base })

@@ -1,6 +1,6 @@
 'use strict'
 
-const DepResolver = require('../../lib/dep-resolver').DepResolver
+const DepResolver = require('../../lib/dep-resolver')
 
 describe('DepResolver', () => {
   it('registers dependent files', () => {

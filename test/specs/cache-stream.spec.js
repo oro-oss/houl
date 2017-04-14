@@ -1,10 +1,12 @@
 'use strict'
 
-const Readable = require('stream').Readable
-const Writable = require('stream').Writable
 const Cache = require('../../lib/cache')
-const DepResolver = require('../../lib/dep-resolver').DepResolver
+const DepResolver = require('../../lib/dep-resolver')
 const cacheStream = require('../../lib/cache-stream')
+
+const helpers = require('../helpers')
+const assertStream = helpers.assertStream
+const source = helpers.source
 
 const emptyArray = () => []
 const emptyStr = () => ''
@@ -252,29 +254,3 @@ describe('Cache Stream', () => {
       })
   })
 })
-
-function assertStream (expected) {
-  let count = 0
-
-  return new Writable({
-    objectMode: true,
-    write (data, encoding, cb) {
-      expect(data).toEqual(expected[count])
-
-      count += 1
-      cb(null, data)
-    }
-  }).on('finish', () => {
-    expect(count).toBe(expected.length)
-  })
-}
-
-function source (input) {
-  return new Readable({
-    objectMode: true,
-    read () {
-      input.forEach(data => this.push(data))
-      this.push(null)
-    }
-  })
-}
