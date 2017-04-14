@@ -1,7 +1,7 @@
 'use strict'
 
 const Config = require('../../lib/models/config')
-const processTask = require('../../lib/process-task')
+const taskStream = require('../../lib/task-stream')
 
 const helpers = require('../helpers')
 const vinyl = helpers.vinyl
@@ -21,7 +21,7 @@ describe('ProcessTask Stream', () => {
 
     source([
       vinyl({ path: 'test.css', contents: '' })
-    ]).pipe(processTask(config))
+    ]).pipe(taskStream(config))
       .pipe(assertStream([
         vinyl({ path: 'test.css', contents: '' })
       ]))
@@ -54,7 +54,7 @@ describe('ProcessTask Stream', () => {
     source([
       vinyl({ path: 'test.es6', contents: 'const test = "es6"' }),
       vinyl({ path: 'test.scss', contents: '.foo {}' })
-    ]).pipe(processTask(config))
+    ]).pipe(taskStream(config))
       .pipe(assertStream([
         vinyl({ path: 'test.js', contents: 'es6: const test = "es6"' }),
         vinyl({ path: 'test.css', contents: 'scss: .foo {}' })
@@ -81,7 +81,7 @@ describe('ProcessTask Stream', () => {
     source([
       vinyl({ path: 'test.es6', contents: 'const test = "test"' }),
       vinyl({ path: 'vendor/test.es6', contents: 'const test = "vendor"' })
-    ]).pipe(processTask(config))
+    ]).pipe(taskStream(config))
       .pipe(assertStream([
         vinyl({ path: 'test.js', contents: 'es6: const test = "test"' }),
         vinyl({ path: 'vendor/test.es6', contents: 'const test = "vendor"' })
@@ -108,7 +108,7 @@ describe('ProcessTask Stream', () => {
 
     source([
       vinyl({ path: 'test.es6' })
-    ]).pipe(processTask(config))
+    ]).pipe(taskStream(config))
       .pipe(assertStream([
         vinyl({ path: 'test.js' })
       ]))
