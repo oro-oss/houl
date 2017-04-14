@@ -28,7 +28,7 @@ describe('Cache Stream', () => {
   })
 
 
-  it('should not affect deps update of previous item', done => {
+  it('should not affect latter items even if previous item updates nested deps', done => {
     // last:    a.txt -> b.txt -> c.txt
     // current: a.txt -> b.txt -> d.txt
     // With this structure, if a.txt and b.txt passes to
