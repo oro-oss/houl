@@ -10,7 +10,7 @@ const emptyArray = () => []
 const emptyStr = () => ''
 
 describe('Cache Stream', () => {
-  it('does not update a cache until the stream is finished', done => {
+  it('should not update a cache until the stream is finished', done => {
     const cache = new Cache()
     const depResolver = new DepResolver(emptyArray)
 
@@ -23,6 +23,50 @@ describe('Cache Stream', () => {
         { path: 'foo.txt', contents: 'abc' },
         { path: 'bar.txt', contents: 'def' },
         { path: 'foo.txt', contents: 'abc' }
+      ]))
+      .on('finish', done)
+  })
+
+
+  it('should not affect deps update of previous item', done => {
+    // last:    a.txt -> b.txt -> c.txt
+    // current: a.txt -> b.txt -> d.txt
+    // With this structure, if a.txt and b.txt passes to
+    // cache stream in this order, both files should not be hit the cache.
+
+    const cache = new Cache()
+    const depResolver = new DepResolver((_, content) => {
+      return content ? [content] : []
+    })
+
+    cache.deserialize({
+      'a.txt': 'b.txt',
+      'b.txt': 'c.txt',
+      'c.txt': '',
+      'd.txt': ''
+    })
+
+    depResolver.deserialize({
+      'a.txt': ['b.txt'],
+      'b.txt': ['c.txt']
+    })
+
+    const mockFs = pathName => {
+      return {
+        'a.txt': 'b.txt',
+        'b.txt': 'd.txt',
+        'c.txt': '',
+        'd.txt': ''
+      }[pathName]
+    }
+
+    source([
+        { path: 'a.txt', contents: 'b.txt' },
+        { path: 'b.txt', contents: 'd.txt' }
+    ]).pipe(cacheStream(cache, depResolver, mockFs))
+      .pipe(assertStream([
+        { path: 'a.txt', contents: 'b.txt' },
+        { path: 'b.txt', contents: 'd.txt' }
       ]))
       .on('finish', done)
   })
