@@ -105,42 +105,6 @@ describe('Cache Stream', () => {
       .on('finish', done)
   })
 
-  it('passes data if deps are updated', done => {
-    const cache = new Cache()
-    const depResolver = new DepResolver(() => ['baz.txt'])
-
-    cache.deserialize({
-      'foo.txt': 'abc',
-      'bar.txt': 'def',
-      'baz.txt': 'ghi'
-    })
-
-    depResolver.deserialize({
-      'foo.txt': ['bar.txt']
-    })
-
-    const mockFs = pathName => {
-      return {
-        'foo.txt': 'abc',
-        'bar.txt': 'def',
-        'baz.txt': 'ghi'
-      }[pathName]
-    }
-
-    // Shold foo.txt be updated?
-    // contents      -> not updated
-    // deps          -> updated (bar.txt -> baz.txt)
-    // deps contents -> not updated all
-    // -> should be updated
-    source([
-      { path: 'foo.txt', contents: 'abc' }
-    ]).pipe(cacheStream(cache, depResolver, mockFs))
-      .pipe(assertStream([
-        { path: 'foo.txt', contents: 'abc' }
-      ]))
-      .on('finish', done)
-  })
-
   it('passes data if deps contents are updated', done => {
     const cache = new Cache()
     const depResolver = new DepResolver(() => ['bar.txt'])
