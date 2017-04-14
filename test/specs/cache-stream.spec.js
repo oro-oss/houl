@@ -1,7 +1,7 @@
 'use strict'
 
 const Cache = require('../../lib/cache')
-const DepResolver = require('../../lib/dep-resolver').DepResolver
+const DepResolver = require('../../lib/dep-resolver')
 const cacheStream = require('../../lib/cache-stream')
 
 const helpers = require('../helpers')
