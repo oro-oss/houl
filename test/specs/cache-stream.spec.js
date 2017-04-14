@@ -10,7 +10,7 @@ const emptyArray = () => []
 const emptyStr = () => ''
 
 describe('Cache Stream', () => {
-  it('does not pass a file having exactly same path and contents', done => {
+  it('does not update a cache until the stream is finished', done => {
     const cache = new Cache()
     const depResolver = new DepResolver(emptyArray)
 
@@ -21,23 +21,8 @@ describe('Cache Stream', () => {
     ]).pipe(cacheStream(cache, depResolver, emptyStr))
       .pipe(assertStream([
         { path: 'foo.txt', contents: 'abc' },
-        { path: 'bar.txt', contents: 'def' }
-      ]))
-      .on('finish', done)
-  })
-
-  it('updates cache by latter data', done => {
-    const cache = new Cache()
-    const depResolver = new DepResolver(emptyArray)
-
-    source([
-      { path: 'foo.txt', contents: 'abc' },
-      { path: 'foo.txt', contents: 'edf' },
-      { path: 'foo.txt', contents: 'edf' }
-    ]).pipe(cacheStream(cache, depResolver, emptyStr))
-      .pipe(assertStream([
-        { path: 'foo.txt', contents: 'abc' },
-        { path: 'foo.txt', contents: 'edf' }
+        { path: 'bar.txt', contents: 'def' },
+        { path: 'foo.txt', contents: 'abc' }
       ]))
       .on('finish', done)
   })
@@ -209,6 +194,52 @@ describe('Cache Stream', () => {
           'bar.txt': 'updated',
           'baz.txt': 'updated'
         })
+        done()
+      })
+  })
+
+  // #16
+  it('should update all cache and deps for nested dependencies even if root cache does not hit', done => {
+    const cache = new Cache()
+    const depResolver = new DepResolver(() => ['bar.txt', 'qux.txt'])
+
+    cache.deserialize({
+      'foo.txt': '123',
+      'bar.txt': '456',
+      'baz.txt': '789',
+      'qux.txt': 'abc'
+    })
+
+    depResolver.deserialize({
+      'foo.txt': ['bar.txt', 'baz.txt']
+    })
+
+    const mockFs = pathName => {
+      return {
+        'foo.txt': 'updated',
+        'bar.txt': 'updated',
+        'baz.txt': 'updated',
+        'qux.txt': 'updated'
+      }[pathName]
+    }
+
+    source([
+      { path: 'foo.txt', contents: 'updated' }
+    ]).pipe(cacheStream(cache, depResolver, mockFs))
+      .on('finish', () => {
+        expect(cache.serialize()).toEqual({
+          'foo.txt': 'updated',
+          'bar.txt': 'updated',
+          'baz.txt': '789', // Cannot update out of deps
+          'qux.txt': 'updated'
+        })
+
+        expect(depResolver.serialize()).toEqual(
+          jasmine.objectContaining({
+            'foo.txt': ['bar.txt', 'qux.txt']
+          })
+        )
+
         done()
       })
   })
