@@ -117,4 +117,31 @@ describe('ProcessTask Stream', () => {
         done()
       })
   })
+
+  // #19
+  it('hanldes filtering tasks', done => {
+    const config = new Config({
+      rules: {
+        js: 'js'
+      }
+    }, {
+      js: stream => stream.pipe(transform(function (file, encoding, done) {
+        if (file.path.indexOf('exclude') < 0) {
+          this.push(file)
+        }
+        done()
+      }))
+    })
+
+    source([
+      vinyl({ path: 'foo.js' }),
+      vinyl({ path: 'exclude.js' }),
+      vinyl({ path: 'bar.js' })
+    ]).pipe(taskStream(config))
+      .pipe(assertStream([
+        vinyl({ path: 'foo.js' }),
+        vinyl({ path: 'bar.js' })
+      ]))
+      .on('finish', done)
+  })
 })
