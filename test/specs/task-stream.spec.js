@@ -144,4 +144,24 @@ describe('ProcessTask Stream', () => {
       ]))
       .on('finish', done)
   })
+
+  it('handles task errors', done => {
+    const config = new Config({
+      rules: {
+        js: 'js'
+      }
+    }, {
+      js: stream => stream.pipe(transform((file, encoding, done) => {
+        done(new Error('Test Error'))
+      }))
+    })
+
+    source([
+      vinyl({ path: 'error.js' })
+    ]).pipe(taskStream(config))
+      .on('error', err => {
+        expect(err).toEqual(new Error('Test Error'))
+        done()
+      })
+  })
 })
