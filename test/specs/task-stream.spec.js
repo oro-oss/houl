@@ -1,5 +1,7 @@
 'use strict'
 
+const td = require('testdouble')
+
 const Config = require('../../lib/models/config')
 const taskStream = require('../../lib/task-stream')
 
@@ -161,6 +163,45 @@ describe('ProcessTask Stream', () => {
     ]).pipe(taskStream(config))
       .on('error', err => {
         expect(err).toEqual(new Error('Test Error'))
+        done()
+      })
+  })
+
+  it('should log a processed file if it has a logger', done => {
+    const config = new Config({
+      input: 'src',
+      output: 'dist',
+      rules: {
+        js: 'js',
+        scss: {
+          task: 'scss',
+          outputExt: 'css'
+        }
+      }
+    }, {
+      js: stream => stream,
+      scss: stream => stream
+    }, {
+      base: '/path/to'
+    })
+
+    const finish = td.function()
+    const logger = input => ({
+      input,
+      instance: {
+        finish
+      }
+    })
+
+    source([
+      vinyl({ path: '/path/to/src/foo.js', _logger: logger('/src/foo.js') }),
+      vinyl({ path: '/path/to/src/bar.scss', _logger: logger('/src/bar.scss') }),
+      vinyl({ path: '/path/to/src/baz.html', _logger: logger('/src/baz.html') })
+    ]).pipe(taskStream(config))
+      .on('finish', () => {
+        td.verify(finish('/src/foo.js', '/dist/foo.js'))
+        td.verify(finish('/src/bar.scss', '/dist/bar.css'))
+        td.verify(finish('/src/baz.html', '/dist/baz.html'))
         done()
       })
   })

@@ -1,5 +1,7 @@
 'use strict'
 
+const td = require('testdouble')
+
 const Cache = require('../../lib/cache')
 const DepResolver = require('../../lib/dep-resolver')
 const cacheStream = require('../../lib/cache-stream')
@@ -250,6 +252,36 @@ describe('Cache Stream', () => {
           })
         )
 
+        done()
+      })
+  })
+
+  it('should log if input data has a logger', done => {
+    const cache = new Cache()
+    const depResolver = new DepResolver(emptyArray)
+
+    cache.deserialize({
+      'foo.txt': '123',
+      'baz.txt': '456'
+    })
+
+    const mockCache = td.function()
+    const logger = input => ({
+      input,
+      instance: {
+        cache: mockCache
+      }
+    })
+
+    source([
+      { path: 'foo.txt', contents: '123', _logger: logger('foo.txt') },
+      { path: 'bar.txt', contents: '456', _logger: logger('bar.txt') },
+      { path: 'baz.txt', contents: '789', _logger: logger('baz.txt') }
+    ]).pipe(cacheStream(cache, depResolver, emptyStr))
+      .on('finish', () => {
+        td.verify(mockCache('foo.txt'), { times: 1 })
+        td.verify(mockCache('bar.txt'), { times: 0 })
+        td.verify(mockCache('bax.txt'), { times: 0 })
         done()
       })
   })
