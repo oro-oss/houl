@@ -32,7 +32,7 @@ describe('Logger Stream', () => {
         vinyl({
           path: '/path/to/src/foo.js',
           _logger: {
-            input: '/src/foo.js',
+            input: 'src/foo.js',
             instance: mockLogger
           }
         })
@@ -49,7 +49,7 @@ describe('Logger Stream', () => {
       vinyl({ path: '/path/to/src/foo.js' })
     ]).pipe(loggerStream(mockLogger, config))
       .on('finish', () => {
-        td.verify(mockLogger.start('/src/foo.js'))
+        td.verify(mockLogger.start('src/foo.js'))
         done()
       })
   })

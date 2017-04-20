@@ -194,14 +194,14 @@ describe('ProcessTask Stream', () => {
     })
 
     source([
-      vinyl({ path: '/path/to/src/foo.js', _logger: logger('/src/foo.js') }),
-      vinyl({ path: '/path/to/src/bar.scss', _logger: logger('/src/bar.scss') }),
-      vinyl({ path: '/path/to/src/baz.html', _logger: logger('/src/baz.html') })
+      vinyl({ path: '/path/to/src/foo.js', _logger: logger('src/foo.js') }),
+      vinyl({ path: '/path/to/src/bar.scss', _logger: logger('src/bar.scss') }),
+      vinyl({ path: '/path/to/src/baz.html', _logger: logger('src/baz.html') })
     ]).pipe(taskStream(config))
       .on('finish', () => {
-        td.verify(finish('/src/foo.js', '/dist/foo.js'))
-        td.verify(finish('/src/bar.scss', '/dist/bar.css'))
-        td.verify(finish('/src/baz.html', '/dist/baz.html'))
+        td.verify(finish('src/foo.js', 'dist/foo.js'))
+        td.verify(finish('src/bar.scss', 'dist/bar.css'))
+        td.verify(finish('src/baz.html', 'dist/baz.html'))
         done()
       })
   })
