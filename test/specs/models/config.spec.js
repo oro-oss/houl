@@ -15,22 +15,6 @@ describe('Config model', () => {
     expect(c.output).toBePath('/path/to/base/to/dist')
   })
 
-  it('resolves paths in execute options based on cwd', () => {
-    const c = new Config({
-      execute: [
-        {
-          input: 'src/img/_assets/*.svg',
-          output: 'dist/img/share'
-        }
-      ]
-    }, {}, {
-      base: '/path/to/'
-    })
-    const e = c.execute[0]
-    expect(e.input).toBePath('/path/to/src/img/_assets/*.svg')
-    expect(e.output).toBePath('/path/to/dist/img/share')
-  })
-
   it('retain exclude field', () => {
     const c = new Config({
       exclude: '**/_*'

@@ -13,12 +13,5 @@ module.exports = {
       task: 'task2'
     },
     png: 'imagemin'
-  },
-  execute: [
-    {
-      task: 'svg',
-      input: './src/img/_assets/*.svg',
-      output: './dist/img/share'
-    }
-  ]
+  }
 }
