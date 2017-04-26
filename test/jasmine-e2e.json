@@ -1,0 +1,13 @@
+{
+  "spec_dir": "test/e2e",
+  "spec_files": [
+    "setup.js",
+    "**/*[sS]pec.js"
+  ],
+  "helpers": [
+    "../../node_modules/babel-register/lib/node.js",
+    "../jasmine-helpers.js"
+  ],
+  "stopSpecOnExpectationFailure": false,
+  "random": false
+}
