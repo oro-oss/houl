@@ -1,4 +1,4 @@
 var message = 'Test message'
 console.log(message)
 
-//# sourceMappingURL=data:application/json;charset=utf8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoianMvaW5kZXguanMiLCJzb3VyY2VzIjpbImluZGV4LmpzIl0sInNvdXJjZXNDb250ZW50IjpbImNvbnN0IG1lc3NhZ2UgPSAnVGVzdCBtZXNzYWdlJ1xuY29uc29sZS5sb2cobWVzc2FnZSlcbiJdLCJuYW1lcyI6WyJjb25zdCJdLCJtYXBwaW5ncyI6IkFBQUFBLEdBQUssQ0FBQyxPQUFPLEdBQUcsY0FBYztBQUM5QixPQUFPLENBQUMsR0FBRyxDQUFDLE9BQU8sQ0FBQzsifQ==
+/* In dev mode */

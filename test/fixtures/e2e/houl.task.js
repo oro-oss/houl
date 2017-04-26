@@ -8,24 +8,29 @@ const prod = houl.prod
 const buble = require('gulp-buble')
 const sass = require('gulp-sass')
 const pug = require('gulp-pug')
-const sourcemaps = require('gulp-sourcemaps')
 const uglify = require('gulp-uglify')
+
+const devMark = () => require('stream').Transform({
+  objectMode: true,
+  transform (file, encoding, done) {
+    file.contents = Buffer.from(file.contents + '\n/* In dev mode */\n')
+    done(null, file)
+  }
+})
 
 exports.script = stream => {
   return stream
-    .pipe(dev(sourcemaps.init()))
     .pipe(buble())
     .pipe(prod(uglify()))
-    .pipe(dev(sourcemaps.write()))
+    .pipe(dev(devMark()))
 }
 
 exports.style = stream => {
   return stream
-    .pipe(dev(sourcemaps.init()))
     .pipe(sass({
       outputStyle: 'expanded'
     }))
-    .pipe(dev(sourcemaps.write()))
+    .pipe(dev(devMark()))
 }
 
 exports.pug = stream => {
