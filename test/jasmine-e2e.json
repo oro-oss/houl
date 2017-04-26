@@ -1,7 +1,6 @@
 {
   "spec_dir": "test/e2e",
   "spec_files": [
-    "setup.js",
     "**/*[sS]pec.js"
   ],
   "helpers": [

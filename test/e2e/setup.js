@@ -1,10 +1,9 @@
 'use strict'
 
+const path = require('path')
 const spawn = require('child_process').spawn
 
-beforeAll(done => {
-  spawn('npm', ['install'], {
-    shell: true,
-    cwd: 'test/fixtures/e2e'
-  }).on('exit', done)
+spawn('npm', ['install'], {
+  shell: true,
+  cwd: path.resolve(__dirname, '../fixtures/e2e')
 })
