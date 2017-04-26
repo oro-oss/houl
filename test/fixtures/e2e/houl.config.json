@@ -1,0 +1,23 @@
+{
+  "input": "src",
+  "output": "dist",
+  "exclude": "**/_*/**",
+  "taskFile": "./houl.task.js",
+  "rules": {
+    "js": {
+      "task": "script",
+      "exclude": "**/vendor/**"
+    },
+    "scss": {
+      "task": "style",
+      "outputExt": "css"
+    },
+    "pug": {
+      "task": "pug",
+      "outputExt": "html",
+      "progeny": {
+        "rootPath": "src/_layouts"
+      }
+    }
+  }
+}

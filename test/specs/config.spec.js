@@ -6,7 +6,7 @@ const loadConfig = require('../../lib/config').loadConfig
 const findConfig = require('../../lib/config').findConfig
 
 const read = pathname => {
-  return loadConfig(path.join('test/fixtures', pathname))
+  return loadConfig(path.join('test/fixtures/configs', pathname))
 }
 
 describe('Config', () => {

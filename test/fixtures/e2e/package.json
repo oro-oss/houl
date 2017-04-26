@@ -1,0 +1,11 @@
+{
+  "name": "houl-fixtures",
+  "version": "1.0.0",
+  "private": true,
+  "devDependencies": {
+    "gulp-buble": "^0.8.0",
+    "gulp-pug": "^3.3.0",
+    "gulp-sass": "^3.1.0",
+    "gulp-uglify": "^2.1.2"
+  }
+}
