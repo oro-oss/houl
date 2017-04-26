@@ -2,9 +2,17 @@
 
 const path = require('path')
 const fs = require('fs')
+const rimraf = require('rimraf')
 const build = require('../../lib/cli/build').handler
 
 describe('Build CLI', () => {
+  beforeEach(done => {
+    rimraf(path.resolve(__dirname, '../fixtures/e2e/dist'), err => {
+      if (err) throw err
+      done()
+    })
+  })
+
   it('should build in develop mode', done => {
     build({
       config: 'test/fixtures/e2e/houl.config.json'
