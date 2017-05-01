@@ -73,13 +73,8 @@ describe('Build CLI', () => {
       removeDist(() => {
         updateSrc(() => {
           build({ config, cache }).on('finish', () => {
-            try {
-              compare('cache')
-            } catch (err) {
-              expect(err).toBe(null)
-            } finally {
-              fse.remove(cache, done)
-            }
+            compare('cache')
+            done()
           })
         })
       })
