@@ -5,6 +5,7 @@ const fs = require('fs')
 const http = require('http')
 const td = require('testdouble')
 const transform = require('../../helpers').transform
+const waitForData = require('../../helpers').waitForData
 const Config = require('../../../lib/models/config')
 const create = require('../../../lib/externals/browser-sync')
 
@@ -12,17 +13,6 @@ const base = path.resolve(__dirname, '../../../example')
 
 function reqTo (pathname) {
   return 'http://localhost:51234' + pathname
-}
-
-function waitForData (fn) {
-  let buf = ''
-
-  return res => {
-    res.on('data', chunk => buf += chunk)
-    res.on('end', () => {
-      fn(res, buf)
-    })
-  }
 }
 
 function expectDataToBeFile (data, filename) {

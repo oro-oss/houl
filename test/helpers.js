@@ -56,3 +56,14 @@ exports.transform = function transform (fn) {
     transform: fn
   })
 }
+
+exports.waitForData = function waitForData (fn) {
+  let buf = ''
+
+  return res => {
+    res.on('data', chunk => buf += chunk)
+    res.on('end', () => {
+      fn(res, buf)
+    })
+  }
+}

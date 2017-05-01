@@ -35,9 +35,9 @@
     "chokidar-cli": "^1.2.0",
     "eslint": "^3.12.2",
     "eslint-config-ktsn": "^1.0.0",
+    "fs-extra": "^3.0.0",
     "jasmine": "^2.5.2",
     "normalize-path": "^2.0.1",
-    "rimraf": "^2.6.1",
     "testdouble": "^2.1.2"
   },
   "dependencies": {

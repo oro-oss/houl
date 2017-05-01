@@ -1,22 +1,58 @@
 'use strict'
 
 const path = require('path')
-const fs = require('fs')
-const rimraf = require('rimraf')
+const fse = require('fs-extra')
 const build = require('../../lib/cli/build').handler
 
 describe('Build CLI', () => {
+  const config = 'test/fixtures/e2e/houl.config.json'
+  const cache = 'test/fixtures/e2e/.cache.json'
+
+  let revert
+  function updateSrc (cb) {
+    const original = path.resolve(__dirname, '../fixtures/e2e/src')
+    const temp = path.resolve(__dirname, '../fixtures/e2e/.tmp')
+    const updated = path.resolve(__dirname, '../fixtures/e2e/updated-src')
+
+    function handleError (fn) {
+      return err => {
+        if (err) throw err
+        fn()
+      }
+    }
+
+    fse.copy(original, temp, handleError(() => {
+      fse.copy(updated, original, handleError(() => {
+        revert = () => {
+          fse.copySync(temp, original)
+          fse.removeSync(temp)
+        }
+
+        cb()
+      }))
+    }))
+  }
+
   beforeEach(done => {
-    rimraf(path.resolve(__dirname, '../fixtures/e2e/dist'), err => {
-      if (err) throw err
-      done()
+    removeDist(() => {
+      fse.remove(cache, err => {
+        if (err) throw err
+        done()
+      })
     })
+
+    process.env.NODE_ENV = null
+  })
+
+  afterEach(() => {
+    if (revert) {
+      revert()
+      revert = null
+    }
   })
 
   it('should build in develop mode', done => {
-    build({
-      config: 'test/fixtures/e2e/houl.config.json'
-    }).on('finish', () => {
+    build({ config }).on('finish', () => {
       compare('dev')
       done()
     })
@@ -24,14 +60,34 @@ describe('Build CLI', () => {
 
   it('should build in production mode', done => {
     build({
-      config: 'test/fixtures/e2e/houl.config.json',
+      config,
       production: true
     }).on('finish', () => {
       compare('prod')
       done()
     })
   })
+
+  it('should not build cached files', done => {
+    build({ config, cache }).on('finish', () => {
+      removeDist(() => {
+        updateSrc(() => {
+          build({ config, cache }).on('finish', () => {
+            compare('cache')
+            done()
+          })
+        })
+      })
+    })
+  })
 })
+
+function removeDist (cb) {
+  fse.remove(path.resolve(__dirname, '../fixtures/e2e/dist'), err => {
+    if (err) throw err
+    cb()
+  })
+}
 
 function compare (type) {
   const actualDir = path.resolve(__dirname, '../fixtures/e2e/dist')
@@ -51,8 +107,8 @@ function compare (type) {
       throw new Error(`${xh} is not found in expected files`)
     }
 
-    const statX = fs.statSync(actual(xh))
-    const statY = fs.statSync(expected(xh))
+    const statX = fse.statSync(actual(xh))
+    const statY = fse.statSync(expected(xh))
 
     if (statX.isDirectory() && statY.isDirectory()) {
       loop(
@@ -68,7 +124,7 @@ function compare (type) {
   }
 
   function readdir (dir, map) {
-    return fs.readdirSync(map(dir)).map(file => path.join(dir, file))
+    return fse.readdirSync(map(dir)).map(file => path.join(dir, file))
   }
 
   function actual (file) {
@@ -80,11 +136,11 @@ function compare (type) {
   }
 
   function actualFile (file) {
-    return fs.readFileSync(actual(file), 'utf8')
+    return fse.readFileSync(actual(file), 'utf8')
   }
 
   function expectedFile (file) {
-    return fs.readFileSync(expected(file), 'utf8')
+    return fse.readFileSync(expected(file), 'utf8')
   }
 
   function compareItem (file) {
