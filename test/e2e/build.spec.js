@@ -8,6 +8,31 @@ describe('Build CLI', () => {
   const config = 'test/fixtures/e2e/houl.config.json'
   const cache = 'test/fixtures/e2e/.cache.json'
 
+  let revert
+  function updateSrc (cb) {
+    const original = path.resolve(__dirname, '../fixtures/e2e/src')
+    const temp = path.resolve(__dirname, '../fixtures/e2e/.tmp')
+    const updated = path.resolve(__dirname, '../fixtures/e2e/updated-src')
+
+    function handleError (fn) {
+      return err => {
+        if (err) throw err
+        fn()
+      }
+    }
+
+    fse.copy(original, temp, handleError(() => {
+      fse.copy(updated, original, handleError(() => {
+        revert = () => {
+          fse.copySync(temp, original)
+          fse.removeSync(temp)
+        }
+
+        cb()
+      }))
+    }))
+  }
+
   beforeEach(done => {
     removeDist(() => {
       fse.remove(cache, err => {
@@ -17,6 +42,13 @@ describe('Build CLI', () => {
     })
 
     process.env.NODE_ENV = null
+  })
+
+  afterEach(() => {
+    if (revert) {
+      revert()
+      revert = null
+    }
   })
 
   it('should build in develop mode', done => {
@@ -39,16 +71,14 @@ describe('Build CLI', () => {
   it('should not build cached files', done => {
     build({ config, cache }).on('finish', () => {
       removeDist(() => {
-        updateSrc(revert => {
+        updateSrc(() => {
           build({ config, cache }).on('finish', () => {
             try {
               compare('cache')
             } catch (err) {
               expect(err).toBe(null)
             } finally {
-              fse.remove(cache, () => {
-                revert(done)
-              })
+              fse.remove(cache, done)
             }
           })
         })
@@ -62,29 +92,6 @@ function removeDist (cb) {
     if (err) throw err
     cb()
   })
-}
-
-function updateSrc (cb) {
-  const original = path.resolve(__dirname, '../fixtures/e2e/src')
-  const temp = path.resolve(__dirname, '../fixtures/e2e/.tmp')
-  const updated = path.resolve(__dirname, '../fixtures/e2e/updated-src')
-
-  function handleError (fn) {
-    return err => {
-      if (err) throw err
-      fn()
-    }
-  }
-
-  fse.copy(original, temp, handleError(() => {
-    fse.copy(updated, original, handleError(() => {
-      cb(done => {
-        fse.copy(temp, original, handleError(() => {
-          fse.remove(temp, handleError(done))
-        }))
-      })
-    }))
-  }))
 }
 
 function compare (type) {
