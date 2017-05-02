@@ -1,5 +1,7 @@
 'use strict'
 
+const td = require('testdouble')
+
 const Config = require('../../lib/models/config')
 const taskStream = require('../../lib/task-stream')
 
@@ -163,6 +165,32 @@ describe('ProcessTask Stream', () => {
     ]).pipe(taskStream(config))
       .on('error', err => {
         expect(err).toEqual(new Error('Test Error'))
+        done()
+      })
+  })
+
+  it('should teardown internal stream and itself in correct order', done => {
+    const config = new Config({
+      rules: {
+        js: 'js'
+      }
+    }, {
+      js: stream => stream.pipe(transform((file, encoding, done) => {
+        setTimeout(() => {
+          done(null, file)
+        }, 0)
+      }))
+    })
+
+    const spy = td.function()
+    const data = vinyl({ path: 'test.js' })
+
+    source([data])
+      .pipe(taskStream(config))
+      .on('data', spy)
+      .on('error', err => { throw err })
+      .on('end', () => {
+        td.verify(spy(data), { times: 1 })
         done()
       })
   })
