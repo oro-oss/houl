@@ -16,7 +16,9 @@ describe('ProcessTask Stream', () => {
         js: 'js'
       }
     }, {
-      js: () => { throw new Error('Unexpected') }
+      js: stream => stream.pipe(transform((file, encoding, done) => {
+        done(new Error('Unexpected'))
+      }))
     })
 
     source([
