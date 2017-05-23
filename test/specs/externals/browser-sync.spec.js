@@ -9,7 +9,7 @@ const waitForData = require('../../helpers').waitForData
 const Config = require('../../../lib/models/config')
 const create = require('../../../lib/externals/browser-sync')
 
-const base = path.resolve(__dirname, '../../../example')
+const base = path.resolve(__dirname, '../../fixtures')
 
 function reqTo (pathname) {
   return 'http://localhost:51234' + pathname
@@ -58,31 +58,31 @@ describe('Using browsersync', () => {
   })
 
   it('starts dev server by the given port', done => {
-    http.get(reqTo('/src/'), waitForData((res, data) => {
+    http.get(reqTo('/sources/'), waitForData((res, data) => {
       expect(res.statusCode).toBe(200)
-      expectDataToBeFile(data, 'src/index.html')
+      expectDataToBeFile(data, 'sources/index.html')
       done()
     }))
   })
 
   it('executes corresponding task to transform sources', done => {
-    http.get(reqTo('/src/js/index.js'), waitForData((res, data) => {
+    http.get(reqTo('/sources/index.js'), waitForData((res, data) => {
       expect(data).toMatch(/^\*\*transformed\*\*\n/)
       done()
     }))
   })
 
   it('redirects if the specified path does not have trailing slash and it points to a directory', done => {
-    http.get(reqTo('/src'), res => {
+    http.get(reqTo('/sources'), res => {
       expect(res.statusCode).toBe(301)
-      expect(res.headers.location).toBe('/src/')
+      expect(res.headers.location).toBe('/sources/')
       done()
     })
   })
 
   it('registers requested files to dep resolver', done => {
-    http.get(reqTo('/src/css/index.scss'), () => {
-      const absPath = path.resolve(base, 'src/css/index.scss')
+    http.get(reqTo('/sources/index.scss'), () => {
+      const absPath = path.resolve(base, 'sources/index.scss')
       const content = fs.readFileSync(absPath, 'utf8')
       td.verify(mockResolver.register(absPath, content))
       done()
