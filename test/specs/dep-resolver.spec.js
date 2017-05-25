@@ -53,11 +53,17 @@ describe('DepResolver', () => {
 
     r.clear('/n.js')
 
-    // b -> a
+    // Should not remove inDeps of `n` because
+    // the deps may still refer `n` even if it has gone.
+    //
+    // a --> (n)
+    // ^  |
+    // b -^
+    //
     // y -> x
     expect(r.serialize()).toEqual({
-      '/a.js': [],
-      '/b.js': ['/a.js'],
+      '/a.js': ['/n.js'],
+      '/b.js': ['/n.js', '/a.js'],
       '/y.js': ['/x.js'],
       '/x.js': []
     })
