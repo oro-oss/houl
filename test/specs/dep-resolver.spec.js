@@ -32,6 +32,37 @@ describe('DepResolver', () => {
     ])
   })
 
+  it('clears provided file', () => {
+    const r = new DepResolver((_, content) => content.split(','))
+
+    // a --> n --> x
+    // ^  |    |   ^
+    // b -^     -> y
+    r.register('/a.js', '/n.js')
+    r.register('/b.js', '/n.js,/a.js')
+    r.register('/n.js', '/x.js,/y.js')
+    r.register('/y.js', '/x.js')
+
+    expect(r.serialize()).toEqual({
+      '/a.js': ['/n.js'],
+      '/b.js': ['/n.js', '/a.js'],
+      '/n.js': ['/x.js', '/y.js'],
+      '/y.js': ['/x.js'],
+      '/x.js': []
+    })
+
+    r.clear('/n.js')
+
+    // b -> a
+    // y -> x
+    expect(r.serialize()).toEqual({
+      '/a.js': [],
+      '/b.js': ['/a.js'],
+      '/y.js': ['/x.js'],
+      '/x.js': []
+    })
+  })
+
   it('resolves nested dependencies', () => {
     const r = new DepResolver((_, content) => [content])
 
