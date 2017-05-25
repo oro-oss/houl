@@ -253,4 +253,48 @@ describe('Cache Stream', () => {
         done()
       })
   })
+
+  // #26
+  it('should not pass undefined value to file request callback of dep resolver', done => {
+    // Naive dep resolver from JavaScript content
+    const extractDeps = content => {
+      const re = /import "(.+?)"/g
+      const res = []
+      let m
+      while (m = re.exec(content)) { // eslint-disable-line
+        res.push(m[1])
+      }
+      return res
+    }
+
+    // Fake JavaScript files
+    const stubFs = {
+      'root.js': 'import "second.js"',
+      'second.js': 'import "foo.js"\nimport "bar.js"',
+      'foo.js': 'alert("foo")',
+      'bar.js': 'alert("bar")'
+    }
+
+    const cache = new Cache()
+    const depResolver = new DepResolver((_, content) => {
+      // Progeny will throw an error if `content` is undefined
+      expect(content).not.toBeUndefined()
+      return extractDeps(content)
+    })
+
+    const test = () => {
+      return source([
+        { path: 'root.js', contents: stubFs['root.js'] }
+      ]).pipe(cacheStream(cache, depResolver, fileName => stubFs[fileName]))
+    }
+
+    // Save base cache at first
+    test().on('finish', () => {
+      // Update the source files
+      delete stubFs['bar.js']
+      stubFs['second.js'] = 'import "foo.js"'
+
+      test().on('finish', done)
+    })
+  })
 })
