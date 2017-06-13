@@ -35,7 +35,7 @@ describe('Config', () => {
 
   it('loads a preset with the object format property', () => {
     const config = read('normal-with-preset-options.js')
-    expect(config.rules.baz).not.toBe(undefined)
+    expect(config.rules.baz.task()).toBe('bazOptions')
   })
 
   it('search config file', () => {
