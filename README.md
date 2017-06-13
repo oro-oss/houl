@@ -30,6 +30,12 @@ $ houl build -c config.js
 $ houl dev -c config.js
 ```
 
+If you want to specify a listen port of the dev server, you can set `--port` (shorthand `-p`) option.
+
+```bash
+$ houl dev -p 50000
+```
+
 ## Configuration
 
 Houl requires two type of files - config file and task file.
