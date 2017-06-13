@@ -1,7 +1,7 @@
 {
   "name": "houl",
   "version": "0.1.10",
-  "description": "Gulp compatible build tool targeted for huge static sites",
+  "description": "Gulp compatible build tool and dev server for huge static sites",
   "main": "lib/api.js",
   "bin": "bin/houl.js",
   "files": [

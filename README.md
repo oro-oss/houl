@@ -1,6 +1,6 @@
 # Houl
 
-Gulp compatible build tool targeted for huge static sites.
+Gulp compatible build tool and dev server for huge static sites.
 
 ## Installation
 
