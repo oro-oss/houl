@@ -38,6 +38,12 @@ describe('Config', () => {
     expect(config.rules.baz.task()).toBe('bazOptions')
   })
 
+  it('allows an empty taskFile field', () => {
+    expect(() => {
+      read('no-taskfile.js')
+    }).not.toThrow()
+  })
+
   it('search config file', () => {
     function exists (pathname) {
       return '/path/houl.config.js' === normalize(pathname)
