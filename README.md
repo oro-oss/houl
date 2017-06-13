@@ -30,6 +30,33 @@ $ houl build -c config.js
 $ houl dev -c config.js
 ```
 
+### Enable build cache
+
+You may want to cache each build file and process only updated files in the next build. Houl provides this feature for you by setting `--cache` option.
+
+```bash
+$ houl build --cache .houlcache
+```
+
+Note that the file name that is specified with `--cache` option (`.houlcache` in the above example) is a cache file to check updated files since the previous build. You need to specify the same file on every build to make sure to work the cache system correctly.
+
+The cache system will traverse dependencies to check file updates strictly. The dependencies check works out of the box for the most of file formats thanks to [progeny](https://github.com/es128/progeny). But you may need to adapt a new file format or modify progeny configs for your project. In that case, you can pass progeny configs into each rules (you will learn about *rules* in a later section).
+
+```json
+{
+  "rules": {
+    "js": {
+      "task": "scripts",
+      "progeny": {
+        "extension": "es6"
+      }
+    }
+  }
+}
+```
+
+### Specify port number of dev server
+
 If you want to specify a listen port of the dev server, you can set `--port` (shorthand `-p`) option.
 
 ```bash
@@ -64,6 +91,7 @@ Key       | Description
 task      | Task name that will apply transformations
 outputExt | Extension of output files. If omitted, it is same as input files' extensions.
 exclude   | Glob pattern of files that will not be applied the rule
+progeny   | Specify [progeny configs](https://github.com/es128/progeny#configuration) for the corresponding file format
 
 #### Preset
 
@@ -91,7 +119,10 @@ Full example of config file:
   "rules": {
     "js": {
       "task": "scripts",
-      "exclude": "**/vendor/**"
+      "exclude": "**/vendor/**",
+      "progeny": {
+        "extension": "es6"
+      }
     },
     "scss": {
       "task": "styles",
