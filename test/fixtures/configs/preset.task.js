@@ -5,3 +5,7 @@ exports.foo = () => {
 exports.bar = () => {
   return 'bar'
 }
+
+exports.baz = (_, options) => {
+  return options
+}

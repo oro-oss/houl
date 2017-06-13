@@ -45,6 +45,18 @@ describe('Rule model', () => {
     }).toThrowError('Task "foo" is not defined')
   })
 
+  it('provides options to the task', () => {
+    const r = new Rule({
+      task: 'foo',
+      options: {
+        test: 'success'
+      }
+    }, 'js', {
+      foo: (_, options) => options.test
+    })
+    expect(r.task()).toBe('success')
+  })
+
   it('converts output path to input path', () => {
     const r = new Rule({
       task: 'foo',
