@@ -40,7 +40,7 @@ $ houl build --cache .houlcache
 
 Note that the file name that is specified with `--cache` option (`.houlcache` in the above example) is a cache file to check updated files since the previous build. You need to specify the same file on every build to make sure to work the cache system correctly.
 
-The cache system will traverse dependencies to check file updates strictly. The dependencies check works out of the box for the most of file formats thanks to [progeny](https://github.com/es128/progeny). But you may need to adapt a new file format or modify progeny configs for your project. In that case, you can pass progeny configs into each rules (you will learn about *rules* in a later section).
+The cache system will traverse dependencies to check file updates strictly. The dependencies check works out of the box for the most of file formats thanks to [progeny](https://github.com/es128/progeny). But you may need to adapt a new file format or modify progeny configs for your project. In that case, you can pass progeny configs into each rules (you will learn about _rules_ in a later section).
 
 ```json
 {
@@ -71,27 +71,30 @@ Houl requires two type of files - config file and task file.
 
 Houl config file can be `.json` or `.js` that exports config object. It specifies the project source/destination directory, the way how it transforms sources and so on. Available options are following:
 
-Key      | Description
--------- | --------------------------------------------------------
-input    | Path to source directory
-output   | Path to destination directory
-exclude  | Glob pattern of files that will be ignored from input
-taskFile | Path to task file that is described in the later section
-preset   | Package name or directory to preset
-rules    | Specify how to transform source files
+Key            | Description
+-------------- | --------------------------------------------------------
+input          | Path to source directory
+output         | Path to destination directory
+exclude        | Glob pattern of files that will be ignored from input
+taskFile       | Path to task file that is described in the later section
+preset         | Preset package name or an object that specify a preset
+preset.name    | Preset package name
+preset.options | Preset options
+rules          | Specify how to transform source files
 
 #### Rules
 
-You can specify the way how to transform the source files by *rules*. The `rules` field in config file should be an object and its keys indicate target extensions for transformation. For example, if you want to transform `.js` files, you should add `js` field in `rules` object.
+You can specify the way how to transform the source files by _rules_. The `rules` field in config file should be an object and its keys indicate target extensions for transformation. For example, if you want to transform `.js` files, you should add `js` field in `rules` object.
 
 Each field in `rules` object can be an object or a string. If string is specified, it will be treated as `task`.
 
 Key       | Description
---------- | -----------------------------------------------------------------------------
+--------- | -----------------------------------------------------------------------------------------------------------
 task      | Task name that will apply transformations
 outputExt | Extension of output files. If omitted, it is same as input files' extensions.
 exclude   | Glob pattern of files that will not be applied the rule
 progeny   | Specify [progeny configs](https://github.com/es128/progeny#configuration) for the corresponding file format
+options   | Options for the corresponding task that is passed to the 2nd argument of the task
 
 #### Preset
 
@@ -102,6 +105,34 @@ Houl can load external preset that distributed on NPM. You can load it by specif
   "input": "./src",
   "output": "./dist",
   "preset": "houl-preset-foo"
+}
+```
+
+A preset receives any options value if you set a `options` property in the `preset` field.
+
+```json
+{
+  "input": "./src",
+  "output": "./dist",
+  "preset": {
+    "name": "houl-preset-foo",
+    "options": {
+      "exclude": "**/_*/**"
+    }
+  }
+}
+```
+
+The specified options can be referred in the config file of the preset if it is defined as a function style.
+
+```js
+module.exports = function(options) {
+  return {
+    exclude: options.exclude,
+    rules: {
+      // ...
+    }
+  }
 }
 ```
 
@@ -126,7 +157,10 @@ Full example of config file:
     },
     "scss": {
       "task": "styles",
-      "outputExt": "css"
+      "outputExt": "css",
+      "options": {
+        "fooValue": "foo"
+      }
     }
   }
 }
@@ -136,7 +170,7 @@ Full example of config file:
 
 The task file contains how to transform source files by Houl. Interesting point is the task file is compatible with any [Gulp](http://gulpjs.com/) plugins. That means you can utilize rich gulp ecosystem.
 
-The task file must be `.js` file and you need to export some functions. The exported functions receive a stream that will send source files then you must return a piped stream that transforms them. You can use any Gulp plugins to pipe the stream:
+The task file must be `.js` file and you need to export some functions. The exported functions receive a stream that will send source files then you must return a piped stream that transforms them. The 2nd argument of the function will be an options value that specified in each rule in the config file. You can use any Gulp plugins to pipe the stream:
 
 ```javascript
 const babel = require('gulp-babel')
@@ -147,9 +181,9 @@ exports.scripts = stream => {
     .pipe(babel())
 }
 
-exports.styles = stream => {
+exports.styles = (stream, options) => {
   return stream
-    .pipe(sass())
+    .pipe(sass(options.sass))
 }
 ```
 
