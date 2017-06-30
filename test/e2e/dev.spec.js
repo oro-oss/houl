@@ -25,6 +25,7 @@ describe('Dev CLI', () => {
     bs = dev({
       config: options.config,
       port: options.port || 3000,
+      'base-path': options['base-path'] || '/',
       _debug: true
     })
 
@@ -101,6 +102,18 @@ describe('Dev CLI', () => {
   it('can be specified port number of dev server', done => {
     run({ config, port: 51234 }, () => {
       get('/js/index.js', 51234, (res, data) => {
+        expect(res.statusCode).toBe(200)
+        assertData(data, 'js/index.js')
+        done()
+      })
+    })
+  })
+
+  it('can be set base path of dev server', done => {
+    const options = { config }
+    options['base-path'] = 'path/to/base'
+    run(options, () => {
+      get('/path/to/base/js/index.js', 3000, (res, data) => {
         expect(res.statusCode).toBe(200)
         assertData(data, 'js/index.js')
         done()
