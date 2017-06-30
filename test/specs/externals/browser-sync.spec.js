@@ -120,5 +120,13 @@ describe('Using browsersync', () => {
         done()
       })
     })
+
+    it('redirects if it requests to the root of base path', done => {
+      http.get(reqTo('/path/to/base'), res => {
+        expect(res.statusCode).toBe(301)
+        expect(res.headers.location).toBe('/path/to/base/')
+        done()
+      })
+    })
   })
 })
