@@ -43,49 +43,90 @@ describe('Using browsersync', () => {
   }
 
   let bs
-  beforeAll(done => {
-    bs = create(config, {
-      port: 51234,
-      open: false,
-      logLevel: 'silent'
-    }, mockResolver)
+  describe('without base path', () => {
+    beforeAll(done => {
+      bs = create(config, {
+        port: 51234,
+        open: false,
+        logLevel: 'silent'
+      }, mockResolver, '/')
 
-    bs.emitter.on('init', done)
-  })
+      bs.emitter.on('init', done)
+    })
 
-  afterAll(() => {
-    bs.exit()
-  })
+    afterAll(() => {
+      bs.exit()
+    })
 
-  it('starts dev server by the given port', done => {
-    http.get(reqTo('/sources/'), waitForData((res, data) => {
-      expect(res.statusCode).toBe(200)
-      expectDataToBeFile(data, 'sources/index.html')
-      done()
-    }))
-  })
+    it('starts dev server by the given port', done => {
+      http.get(reqTo('/sources/'), waitForData((res, data) => {
+        expect(res.statusCode).toBe(200)
+        expectDataToBeFile(data, 'sources/index.html')
+        done()
+      }))
+    })
 
-  it('executes corresponding task to transform sources', done => {
-    http.get(reqTo('/sources/index.js'), waitForData((res, data) => {
-      expect(data).toMatch(/^\*\*transformed\*\*\n/)
-      done()
-    }))
-  })
+    it('executes corresponding task to transform sources', done => {
+      http.get(reqTo('/sources/index.js'), waitForData((res, data) => {
+        expect(data).toMatch(/^\*\*transformed\*\*\n/)
+        done()
+      }))
+    })
 
-  it('redirects if the specified path does not have trailing slash and it points to a directory', done => {
-    http.get(reqTo('/sources'), res => {
-      expect(res.statusCode).toBe(301)
-      expect(res.headers.location).toBe('/sources/')
-      done()
+    it('redirects if the specified path does not have trailing slash and it points to a directory', done => {
+      http.get(reqTo('/sources'), res => {
+        expect(res.statusCode).toBe(301)
+        expect(res.headers.location).toBe('/sources/')
+        done()
+      })
+    })
+
+    it('registers requested files to dep resolver', done => {
+      http.get(reqTo('/sources/index.scss'), () => {
+        const absPath = path.resolve(base, 'sources/index.scss')
+        const content = fs.readFileSync(absPath, 'utf8')
+        td.verify(mockResolver.register(absPath, content))
+        done()
+      })
     })
   })
 
-  it('registers requested files to dep resolver', done => {
-    http.get(reqTo('/sources/index.scss'), () => {
-      const absPath = path.resolve(base, 'sources/index.scss')
-      const content = fs.readFileSync(absPath, 'utf8')
-      td.verify(mockResolver.register(absPath, content))
-      done()
+  describe('with base path', () => {
+    beforeAll(done => {
+      bs = create(config, {
+        port: 51234,
+        open: false,
+        logLevel: 'silent'
+      }, mockResolver, '/path/to/base/')
+
+      bs.emitter.on('init', done)
+    })
+
+    afterAll(() => {
+      bs.exit()
+    })
+
+    it('allows to set base path of assets', done => {
+      http.get(reqTo('/path/to/base/sources/index.html'), waitForData((res, data) => {
+        expect(res.statusCode).toBe(200)
+        expectDataToBeFile(data, 'sources/index.html')
+        done()
+      }))
+    })
+
+    it('returns not found message if the req does not follow the base path', done => {
+      http.get(reqTo('/sources/index.html'), res => {
+        expect(res.statusCode).toBe(404)
+        done()
+      })
+    })
+
+    it('redirects if it requests to the root of base path', done => {
+      http.get(reqTo('/path/to/base'), res => {
+        expect(res.statusCode).toBe(301)
+        expect(res.headers.location).toBe('/path/to/base/')
+        done()
+      })
     })
   })
 })
