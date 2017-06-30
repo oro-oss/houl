@@ -97,7 +97,7 @@ describe('Using browsersync', () => {
         port: 51234,
         open: false,
         logLevel: 'silent'
-      }, mockResolver, '/path/to/base')
+      }, mockResolver, '/path/to/base/')
 
       bs.emitter.on('init', done)
     })
