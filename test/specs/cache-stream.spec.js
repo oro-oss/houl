@@ -63,8 +63,8 @@ describe('Cache Stream', () => {
     }
 
     source([
-        { path: 'a.txt', contents: 'b.txt' },
-        { path: 'b.txt', contents: 'd.txt' }
+      { path: 'a.txt', contents: 'b.txt' },
+      { path: 'b.txt', contents: 'd.txt' }
     ]).pipe(cacheStream(cache, depResolver, mockFs))
       .pipe(assertStream([
         { path: 'a.txt', contents: 'b.txt' },

@@ -1,5 +1,7 @@
 # Houl
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/ktsn/houl.svg)](https://greenkeeper.io/)
+
 Gulp compatible build tool and dev server for huge static sites.
 
 ## Installation

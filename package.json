@@ -33,12 +33,12 @@
   },
   "devDependencies": {
     "chokidar-cli": "^1.2.0",
-    "eslint": "^3.12.2",
+    "eslint": "^4.2.0",
     "eslint-config-ktsn": "^1.0.2",
     "fs-extra": "^3.0.0",
     "jasmine": "^2.5.2",
     "normalize-path": "^2.0.1",
-    "testdouble": "^2.1.2"
+    "testdouble": "^3.2.2"
   },
   "dependencies": {
     "browser-sync": "^2.18.7",
@@ -48,6 +48,6 @@
     "minimatch": "^3.0.3",
     "progeny": "^0.11.0",
     "vinyl-fs": "^2.4.4",
-    "yargs": "^6.6.0"
+    "yargs": "^8.0.2"
   }
 }
