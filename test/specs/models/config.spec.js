@@ -257,4 +257,40 @@ describe('Config model', () => {
     rule = c.findRuleByOutput('path/to/test_2.css', exists)
     expect(rule.task()).toBe('baz')
   })
+
+  it('resolves proxy config', () => {
+    const proxy = {
+      '/foo': 'http://foo.com/',
+      '/bar': {
+        target: 'https://bar.com/',
+        secure: true
+      }
+    }
+
+    const c = new Config({
+      dev: { proxy }
+    }, {})
+
+    expect(c.proxy).toEqual([
+      {
+        context: '/foo',
+        config: {
+          target: 'http://foo.com/'
+        }
+      },
+      {
+        context: '/bar',
+        config: {
+          target: 'https://bar.com/',
+          secure: true
+        }
+      }
+    ])
+  })
+
+  it('provides an empty array as proxy if dev.proxy is not specified', () => {
+    const c = new Config({}, {})
+
+    expect(c.proxy).toEqual([])
+  })
 })
