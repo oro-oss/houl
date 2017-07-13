@@ -129,4 +129,57 @@ describe('Using browsersync', () => {
       })
     })
   })
+
+  describe('with proxy', () => {
+    let proxy
+    beforeAll(done => {
+      const proxyConfig = new Config({
+        input: 'sources',
+        output: 'dist',
+        dev: {
+          proxy: {
+            '/': {
+              target: 'http://localhost:61234/',
+              logLevel: 'silent'
+            }
+          }
+        }
+      }, {}, { base })
+
+      proxy = create(proxyConfig, {
+        port: 51234,
+        open: false,
+        logLevel: 'silent'
+      }, mockResolver, '/')
+
+      bs = create(config, {
+        port: 61234,
+        open: false,
+        logLevel: 'silent'
+      }, mockResolver, '/')
+
+      bs.emitter.on('init', done)
+    })
+
+    afterAll(() => {
+      proxy.exit()
+      bs.exit()
+    })
+
+    it('proxies requests besed on proxy option', done => {
+      http.get(reqTo('/sources/index.html'), waitForData((res, data) => {
+        expect(res.statusCode).toBe(200)
+        expectDataToBeFile(data, 'sources/index.html')
+        done()
+      }))
+    })
+
+    it('prioritize self-resolved contents than proxy', done => {
+      http.get(reqTo('/sources/index.js'), waitForData((res, data) => {
+        expect(res.statusCode).toBe(200)
+        expectDataToBeFile(data, 'sources/sources/index.js')
+        done()
+      }))
+    })
+  })
 })
