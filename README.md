@@ -32,6 +32,12 @@ $ houl build -c config.js
 $ houl dev -c config.js
 ```
 
+If you want to include dot files (e.g. `.htaccess`) in input, set `--dot` flag with build command.
+
+```bash
+$ houl build --dot
+```
+
 ### Enable build cache
 
 You may want to cache each build file and process only updated files in the next build. Houl provides this feature for you by setting `--cache` option.
