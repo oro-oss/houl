@@ -20,11 +20,22 @@ describe('Rule model', () => {
     expect(r.task()).toBe('foo')
     expect(r.inputExt).toBe('scss')
     expect(r.outputExt).toBe('css')
-    expect(r.exclude).toBe('**/vendor/**')
+    expect(r.exclude).toEqual(['**/vendor/**'])
     expect(r.progeny).toEqual({
       extension: 'scss',
       rootPath: 'path/to/root'
     })
+  })
+
+  it('accepts array formed exclude', () => {
+    const r = new Rule({
+      task: 'foo',
+      exclude: ['**/vendor/**', '**/.DS_Store']
+    }, 'js', {
+      foo: () => 'foo'
+    })
+
+    expect(r.exclude).toEqual(['**/vendor/**', '**/.DS_Store'])
   })
 
   it('deals with string format', () => {
@@ -79,6 +90,19 @@ describe('Rule model', () => {
     expect(r.getOutputPath('path/to/test.scss')).toBe('path/to/test.css')
   })
 
+  it('checks whether the given path is excluded or not', () => {
+    const r = new Rule({
+      task: 'foo',
+      exclude: ['**/vendor/**', '**/_*']
+    }, 'js', {
+      foo: () => 'foo'
+    })
+
+    expect(r.isExclude('src/js/vendor/index.js')).toBe(true)
+    expect(r.isExclude('src/js/_hidden.js')).toBe(true)
+    expect(r.isExclude('src/js/index.js')).toBe(false)
+  })
+
   describe('Empty rule', () => {
     const empty = Rule.empty
 
@@ -92,6 +116,10 @@ describe('Rule model', () => {
 
     it('passes input on getOutputPath', () => {
       expect(empty.getOutputPath('/path/to/test.js')).toBe('/path/to/test.js')
+    })
+
+    it('always treats that the input path is not excluded', () => {
+      expect(empty.isExclude('/path/to/something')).toBe(false)
     })
 
     it('has the task that does nothing', () => {

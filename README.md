@@ -83,7 +83,7 @@ Key            | Description
 -------------- | --------------------------------------------------------
 input          | Path to source directory
 output         | Path to destination directory
-exclude        | Glob pattern of files that will be ignored from input
+exclude        | Glob pattern(s) of files that will be ignored from input
 taskFile       | Path to task file that is described in the later section
 preset         | Preset package name or an object that specify a preset
 preset.name    | Preset package name
@@ -100,7 +100,7 @@ Key       | Description
 --------- | -----------------------------------------------------------------------------------------------------------
 task      | Task name that will apply transformations
 outputExt | Extension of output files. If omitted, it is same as input files' extensions.
-exclude   | Glob pattern of files that will not be applied the rule
+exclude   | Glob pattern(s) of files that will not be applied the rule
 progeny   | Specify [progeny configs](https://github.com/es128/progeny#configuration) for the corresponding file format
 options   | Options for the corresponding task that is passed to the 2nd argument of the task
 
@@ -152,7 +152,7 @@ Full example of config file:
 {
   "input": "./src",
   "output": "./dist",
-  "exclude": "**/_*",
+  "exclude": ["**/_*", "**/private/**"],
   "taskFile": "./houl.task.js",
   "preset": "houl-preset-foo",
   "rules": {
