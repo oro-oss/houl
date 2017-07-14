@@ -118,6 +118,10 @@ describe('Rule model', () => {
       expect(empty.getOutputPath('/path/to/test.js')).toBe('/path/to/test.js')
     })
 
+    it('always treats that the input path is not excluded', () => {
+      expect(empty.isExclude('/path/to/something')).toBe(false)
+    })
+
     it('has the task that does nothing', () => {
       expect(empty.task('foobar')).toBe('foobar')
     })
