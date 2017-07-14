@@ -80,6 +80,13 @@ describe('Build CLI', () => {
       })
     })
   })
+
+  it('can output dot files', done => {
+    build({ config, dot: true }).on('finish', () => {
+      compare('dot')
+      done()
+    })
+  })
 })
 
 function removeDist (cb) {
