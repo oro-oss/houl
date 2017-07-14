@@ -20,7 +20,8 @@ describe('Config model', () => {
       exclude: '**/_*'
     }, {})
 
-    expect(c.exclude).toBePath('**/_*')
+    expect(c.exclude.length).toBe(1)
+    expect(c.exclude[0]).toBePath('**/_*')
   })
 
   it('creates vinyl input', () => {
@@ -45,8 +46,24 @@ describe('Config model', () => {
     expect(c.vinylInput[1]).toBePath('!**/_*')
   })
 
+  it('includes array formed `exclude` pattern into vinyl input', () => {
+    const c = new Config({
+      input: 'src',
+      exclude: ['**/_*', '**/.DS_Store']
+    }, {}, {
+      base: '/path/to/'
+    })
+    const input = c.vinylInput
+    expect(input.length).toBe(3)
+    expect(input[0]).toBePath('/path/to/src/**/*')
+    expect(input[1]).toBePath('!**/_*')
+    expect(input[2]).toBePath('!**/.DS_Store')
+  })
+
   it('isExclude always returns false if `exclude` is empty', () => {
-    const c = new Config({}, {})
+    const c = new Config({
+      input: 'src'
+    }, {})
 
     expect(c.isExclude('/path/to/foo.css')).toBe(false)
     expect(c.isExclude('')).toBe(false)
