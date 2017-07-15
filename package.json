@@ -35,7 +35,7 @@
     "chokidar-cli": "^1.2.0",
     "eslint": "^4.2.0",
     "eslint-config-ktsn": "^1.0.2",
-    "fs-extra": "^3.0.0",
+    "fs-extra": "^4.0.0",
     "jasmine": "^2.5.2",
     "normalize-path": "^2.0.1",
     "testdouble": "^3.2.2"
