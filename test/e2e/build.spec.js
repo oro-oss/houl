@@ -13,13 +13,9 @@ describe('Build CLI', () => {
 
   let revert
 
-  beforeEach(done => {
-    removeDist(() => {
-      fse.remove(cache, err => {
-        if (err) throw err
-        done()
-      })
-    })
+  beforeEach(() => {
+    removeDist()
+    fse.removeSync(cache)
 
     process.env.NODE_ENV = null
   })
@@ -50,14 +46,11 @@ describe('Build CLI', () => {
 
   it('should not build cached files', done => {
     build({ config, cache }).on('finish', () => {
-      removeDist(() => {
-        updateSrc(_revert => {
-          revert = _revert
-          build({ config, cache }).on('finish', () => {
-            compare('cache')
-            done()
-          })
-        })
+      removeDist()
+      revert = updateSrc()
+      build({ config, cache }).on('finish', () => {
+        compare('cache')
+        done()
       })
     })
   })

@@ -3,35 +3,22 @@
 const path = require('path')
 const fse = require('fs-extra')
 
-exports.updateSrc = function updateSrc (cb) {
+exports.updateSrc = function updateSrc () {
   const original = path.resolve(__dirname, '../fixtures/e2e/src')
   const temp = path.resolve(__dirname, '../fixtures/e2e/.tmp')
   const updated = path.resolve(__dirname, '../fixtures/e2e/updated-src')
 
-  function handleError (fn) {
-    return err => {
-      if (err) throw err
-      fn()
-    }
+  fse.copySync(original, temp)
+  fse.copySync(updated, original)
+
+  return () => {
+    fse.copySync(temp, original)
+    fse.removeSync(temp)
   }
-
-  fse.copy(original, temp, handleError(() => {
-    fse.copy(updated, original, handleError(() => {
-      const revert = () => {
-        fse.copySync(temp, original)
-        fse.removeSync(temp)
-      }
-
-      cb(revert)
-    }))
-  }))
 }
 
-exports.removeDist = function removeDist (cb) {
-  fse.remove(path.resolve(__dirname, '../fixtures/e2e/dist'), err => {
-    if (err) throw err
-    cb()
-  })
+exports.removeDist = function removeDist () {
+  fse.removeSync(path.resolve(__dirname, '../fixtures/e2e/dist'))
 }
 
 exports.compare = function compare (type) {
