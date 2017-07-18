@@ -16,26 +16,33 @@ $ yarn global add houl
 
 ## Command
 
-Houl provides two commands - `build` and `dev`.
+Houl provides two commands - `build`, `dev` and `watch`.
 
 ```bash
 $ houl build
 $ houl dev
+$ houl watch
 ```
 
-`houl build` transform/copy all source files into destination directory that is written in a config file while `houl dev` starts a dev server (powered by [BrowserSync](https://browsersync.io/)). The dev server dynamically transform a source file when a request is recieved, then you will not suffer the perfomance problem that depends on the size of static site.
+`houl build` transform/copy all source files into destination directory that is written in a config file.
+
+`houl dev` starts a dev server (powered by [BrowserSync](https://browsersync.io/)). The dev server dynamically transform a source file when a request is recieved, then you will not suffer the perfomance problem that depends on the size of static site.
+
+`houl watch` is similar with `houl dev` but it does not start dev server. It watches and builds updated files incrementally. This command is useful in a project that requires some additional processing for asset files such as the asset pipeline of Ruby on Rails.
 
 Houl automatically loads `houl.config.js` or `houl.config.json` as a config file but you can use `--config` (shorthand `-c`) option if you prefer to load other config file.
 
 ```bash
 $ houl build -c config.js
 $ houl dev -c config.js
+$ houl watch -c config.js
 ```
 
-If you want to include dot files (e.g. `.htaccess`) in input, set `--dot` flag with build command.
+If you want to include dot files (e.g. `.htaccess`) in input, set `--dot` flag with `build` and `watch` command.
 
 ```bash
 $ houl build --dot
+$ houl watch --dot
 ```
 
 ### Enable build cache
@@ -44,6 +51,7 @@ You may want to cache each build file and process only updated files in the next
 
 ```bash
 $ houl build --cache .houlcache
+$ houl watch --cache .houlcache
 ```
 
 Note that the file name that is specified with `--cache` option (`.houlcache` in the above example) is a cache file to check updated files since the previous build. You need to specify the same file on every build to make sure to work the cache system correctly.
