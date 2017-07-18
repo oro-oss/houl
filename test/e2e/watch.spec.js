@@ -14,6 +14,9 @@ describe('Build CLI', () => {
   let revert, watcher
 
   function run (options, cbs) {
+    if (watcher) {
+      watcher.close()
+    }
     watcher = watch(options, cbs)
   }
 
@@ -60,6 +63,26 @@ describe('Build CLI', () => {
       () => {
         compare('cache')
         done()
+      }
+    ]))
+  })
+
+  it('should build only updated files even if after restart the command', done => {
+    run({ config, cache }, observe([
+      () => {
+        // Equivalent with exiting watch command
+        watcher.close()
+
+        removeDist()
+        update()
+
+        // Equivalent with restart watch command
+        run({ config, cache }, observe([
+          () => {
+            compare('cache')
+            done()
+          }
+        ]))
       }
     ]))
   })
