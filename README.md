@@ -16,7 +16,7 @@ $ yarn global add houl
 
 ## Command
 
-Houl provides two commands - `build`, `dev` and `watch`.
+Houl provides three commands - `build`, `dev` and `watch`.
 
 ```bash
 $ houl build
