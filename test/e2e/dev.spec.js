@@ -20,14 +20,17 @@ function assertData (data, file, type) {
 describe('Dev CLI', () => {
   const config = 'test/fixtures/e2e/houl.config.json'
 
-  let bs
+  let bs, watcher
   function run (options, cb) {
-    bs = dev({
+    const res = dev({
       config: options.config,
       port: options.port || 3000,
       'base-path': options['base-path'] || '/',
       _debug: true
     })
+
+    bs = res.bs
+    watcher = res.watcher
 
     bs.emitter.on('init', () => cb(bs))
 
@@ -58,9 +61,11 @@ describe('Dev CLI', () => {
 
   afterEach(() => {
     if (bs) bs.exit()
+    if (watcher) watcher.close()
     if (revert) revert()
 
     bs = null
+    watcher = null
     revert = null
   })
 
