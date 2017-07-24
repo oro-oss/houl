@@ -83,6 +83,14 @@ The cache system will traverse dependencies to check file updates strictly. The 
 }
 ```
 
+### `--filter` option
+
+There are some cases that we want to build a part of source files in a project for various purpose (e.g. generating styleguide by using built css files). For that case, we can use `--filter` option to specify which files should be build by glob pattern.
+
+```bash
+$ houl build --filter **/*.scss
+```
+
 ### `--port` (`-p`) option
 
 If you want to specify a listen port of the dev server, you can set `--port` (shorthand `-p`) option.
