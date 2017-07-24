@@ -13,7 +13,7 @@ const assertStream = helpers.assertStream
 
 describe('ProcessTask Stream', () => {
   it('passes through files that does not match any rules', done => {
-    const config = new Config({
+    const config = Config.create({
       rules: {
         js: 'js'
       }
@@ -33,7 +33,7 @@ describe('ProcessTask Stream', () => {
   })
 
   it('transforms file by matched task', done => {
-    const config = new Config({
+    const config = Config.create({
       rules: {
         es6: {
           task: 'js',
@@ -67,7 +67,7 @@ describe('ProcessTask Stream', () => {
   })
 
   it('ignores files that is matched with exclude option', done => {
-    const config = new Config({
+    const config = Config.create({
       rules: {
         es6: {
           task: 'js',
@@ -95,7 +95,7 @@ describe('ProcessTask Stream', () => {
 
   it('transforms extname after executing task', done => {
     let called = false
-    const config = new Config({
+    const config = Config.create({
       rules: {
         es6: {
           task: 'js',
@@ -124,7 +124,7 @@ describe('ProcessTask Stream', () => {
 
   // #19
   it('hanldes filtering tasks', done => {
-    const config = new Config({
+    const config = Config.create({
       rules: {
         js: 'js'
       }
@@ -150,7 +150,7 @@ describe('ProcessTask Stream', () => {
   })
 
   it('handles task errors', done => {
-    const config = new Config({
+    const config = Config.create({
       rules: {
         js: 'js'
       }
@@ -170,7 +170,7 @@ describe('ProcessTask Stream', () => {
   })
 
   it('should teardown internal stream and itself in correct order', done => {
-    const config = new Config({
+    const config = Config.create({
       rules: {
         js: 'js'
       }
@@ -196,7 +196,7 @@ describe('ProcessTask Stream', () => {
   })
 
   it('should update mtime and ctime of a file', done => {
-    const config = new Config({}, {})
+    const config = Config.create({}, {})
 
     const time = new Date()
 

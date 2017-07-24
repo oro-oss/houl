@@ -5,7 +5,7 @@ const Config = require('../../../lib/models/config')
 
 describe('Config model', () => {
   it('resolves input/output paths besed on base path', () => {
-    const c = new Config({
+    const c = Config.create({
       input: 'path/to/src',
       output: 'to/dist/'
     }, {}, {
@@ -16,7 +16,7 @@ describe('Config model', () => {
   })
 
   it('retain exclude field', () => {
-    const c = new Config({
+    const c = Config.create({
       exclude: '**/_*'
     }, {})
 
@@ -25,7 +25,7 @@ describe('Config model', () => {
   })
 
   it('creates vinyl input', () => {
-    const c = new Config({
+    const c = Config.create({
       input: 'src'
     }, {}, {
       base: '/path/to'
@@ -35,7 +35,7 @@ describe('Config model', () => {
   })
 
   it('includes `exclude` pattern into vinyl input', () => {
-    const c = new Config({
+    const c = Config.create({
       input: 'src',
       exclude: '**/_*'
     }, {}, {
@@ -47,7 +47,7 @@ describe('Config model', () => {
   })
 
   it('includes array formed `exclude` pattern into vinyl input', () => {
-    const c = new Config({
+    const c = Config.create({
       input: 'src',
       exclude: ['**/_*', '**/.DS_Store']
     }, {}, {
@@ -61,7 +61,7 @@ describe('Config model', () => {
   })
 
   it('isExclude always returns false if `exclude` is empty', () => {
-    const c = new Config({
+    const c = Config.create({
       input: 'src'
     }, {})
 
@@ -70,7 +70,7 @@ describe('Config model', () => {
   })
 
   it('test whether a path matches exclude pattern', () => {
-    const c = new Config({
+    const c = Config.create({
       input: '/',
       exclude: '**/_*'
     }, {})
@@ -80,7 +80,7 @@ describe('Config model', () => {
   })
 
   it('should not match ancestor path of the input directory for exclude', () => {
-    const c = new Config({
+    const c = Config.create({
       input: '/path/to/src',
       exclude: '**/to/**'
     }, {})
@@ -91,7 +91,7 @@ describe('Config model', () => {
   })
 
   it('loads tasks', () => {
-    const c = new Config({
+    const c = Config.create({
       rules: {
         js: 'foo',
         scss: {
@@ -107,7 +107,7 @@ describe('Config model', () => {
   })
 
   it('add inputExt/outputExt in each rule object', () => {
-    const c = new Config({
+    const c = Config.create({
       rules: {
         js: 'foo',
         scss: {
@@ -126,7 +126,7 @@ describe('Config model', () => {
   })
 
   it('merges rules of preset', () => {
-    const preset = new Config({
+    const preset = Config.create({
       rules: {
         scss: {
           task: 'baz',
@@ -139,7 +139,7 @@ describe('Config model', () => {
       qux: () => 'qux'
     })
 
-    const c = new Config({
+    const c = Config.create({
       rules: {
         js: 'foo',
         scss: 'bar'
@@ -158,7 +158,7 @@ describe('Config model', () => {
   })
 
   it('finds rule by input file path', () => {
-    const c = new Config({
+    const c = Config.create({
       rules: {
         js: 'foo',
         scss: 'bar'
@@ -177,7 +177,7 @@ describe('Config model', () => {
   })
 
   it('excludes matched input file path for rule', () => {
-    const c = new Config({
+    const c = Config.create({
       rules: {
         js: {
           task: 'foo',
@@ -202,7 +202,7 @@ describe('Config model', () => {
       ].indexOf(normalize(pathname)) >= 0
     }
 
-    const c = new Config({
+    const c = Config.create({
       input: '',
       output: '',
       rules: {
@@ -242,7 +242,7 @@ describe('Config model', () => {
       ].indexOf(normalize(pathname)) >= 0
     }
 
-    const c = new Config({
+    const c = Config.create({
       input: '',
       output: '',
       rules: {
@@ -284,7 +284,7 @@ describe('Config model', () => {
       }
     }
 
-    const c = new Config({
+    const c = Config.create({
       dev: { proxy }
     }, {})
 
@@ -306,7 +306,7 @@ describe('Config model', () => {
   })
 
   it('provides an empty array as proxy if dev.proxy is not specified', () => {
-    const c = new Config({}, {})
+    const c = Config.create({}, {})
 
     expect(c.proxy).toEqual([])
   })

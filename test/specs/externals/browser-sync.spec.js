@@ -22,7 +22,7 @@ function expectDataToBeFile (data, filename) {
 }
 
 describe('Using browsersync', () => {
-  const config = new Config({
+  const config = Config.create({
     input: '',
     output: 'dist',
     rules: {
@@ -133,7 +133,7 @@ describe('Using browsersync', () => {
   describe('with proxy', () => {
     let proxy
     beforeAll(done => {
-      const proxyConfig = new Config({
+      const proxyConfig = Config.create({
         input: 'sources',
         output: 'dist',
         dev: {
