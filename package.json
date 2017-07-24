@@ -33,6 +33,7 @@
   },
   "devDependencies": {
     "chokidar-cli": "^1.2.0",
+    "conventional-github-releaser": "^1.1.12",
     "eslint": "^4.2.0",
     "eslint-config-ktsn": "^1.0.2",
     "fs-extra": "^4.0.0",
