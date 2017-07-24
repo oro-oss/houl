@@ -194,4 +194,30 @@ describe('ProcessTask Stream', () => {
         done()
       })
   })
+
+  it('should update mtime and ctime of a file', done => {
+    const config = new Config({}, {})
+
+    const time = new Date()
+
+    const data = vinyl({
+      path: 'test.js',
+      stat: {
+        atime: time,
+        mtime: time,
+        ctime: time
+      }
+    })
+
+    setTimeout(() => {
+      source([data])
+        .pipe(taskStream(config))
+        .on('data', data => {
+          expect(data.stat.atime.getTime()).toBe(time.getTime())
+          expect(data.stat.mtime.getTime()).toBeGreaterThan(time.getTime())
+          expect(data.stat.ctime.getTime()).toBeGreaterThan(time.getTime())
+          done()
+        })
+    }, 0)
+  })
 })
