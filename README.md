@@ -91,6 +91,25 @@ If you want to specify a listen port of the dev server, you can set `--port` (sh
 $ houl dev -p 50000
 ```
 
+### `--base-path` option
+
+Sometimes, we may want to serve a part of a Web site by the dev server. For example, let imagine the following file structure:
+
+```
+- src
+  |- index.html
+  |- js/
+  |- css/
+  |- img/
+  |- ...
+```
+
+If we want to access `src/index.html` via `http://localhost:8080/sub/index.html` in that case, we can use `--base-path` option.
+
+```bash
+$ houl dev --base-path sub
+```
+
 ## Configuration
 
 Houl requires two type of files - config file and task file.
