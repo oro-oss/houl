@@ -61,4 +61,11 @@ describe('Build CLI', () => {
       done()
     })
   })
+
+  it('can filter input files', done => {
+    build({ config, filter: '**/*.scss' }).on('finish', () => {
+      compare('filtered')
+      done()
+    })
+  })
 })

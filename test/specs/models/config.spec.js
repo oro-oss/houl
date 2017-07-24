@@ -46,6 +46,16 @@ describe('Config model', () => {
     expect(c.vinylInput[1]).toBePath('!**/_*')
   })
 
+  it('filters input pattern', () => {
+    const c = new Config({
+      input: '/path/to/src',
+      filter: '/**/*.scss'
+    })
+
+    expect(c.vinylInput.length).toBe(1)
+    expect(c.vinylInput[0]).toBePath('/path/to/src/**/*.scss')
+  })
+
   it('includes array formed `exclude` pattern into vinyl input', () => {
     const c = Config.create({
       input: 'src',
