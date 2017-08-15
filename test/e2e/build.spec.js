@@ -1,5 +1,6 @@
 'use strict'
 
+const td = require('testdouble')
 const fse = require('fs-extra')
 const build = require('../../lib/cli/build').handler
 const e2eHelpers = require('../helpers/e2e')
@@ -11,9 +12,14 @@ describe('Build CLI', () => {
   const config = 'test/fixtures/e2e/houl.config.json'
   const cache = 'test/fixtures/e2e/.cache.json'
 
-  let revert
+  let revert, console
 
   beforeEach(() => {
+    console = {
+      log: td.function(),
+      error: td.function()
+    }
+
     removeDist()
     fse.removeSync(cache)
 
@@ -28,7 +34,7 @@ describe('Build CLI', () => {
   })
 
   it('should build in develop mode', done => {
-    build({ config }).on('finish', () => {
+    build({ config }, { console }).on('finish', () => {
       compare('dev')
       done()
     })
@@ -38,17 +44,17 @@ describe('Build CLI', () => {
     build({
       config,
       production: true
-    }).on('finish', () => {
+    }, { console }).on('finish', () => {
       compare('prod')
       done()
     })
   })
 
   it('should not build cached files', done => {
-    build({ config, cache }).on('finish', () => {
+    build({ config, cache }, { console }).on('finish', () => {
       removeDist()
       revert = updateSrc()
-      build({ config, cache }).on('finish', () => {
+      build({ config, cache }, { console }).on('finish', () => {
         compare('cache')
         done()
       })
@@ -56,15 +62,26 @@ describe('Build CLI', () => {
   })
 
   it('can output dot files', done => {
-    build({ config, dot: true }).on('finish', () => {
+    build({ config, dot: true }, { console }).on('finish', () => {
       compare('dot')
       done()
     })
   })
 
   it('can filter input files', done => {
-    build({ config, filter: '**/*.scss' }).on('finish', () => {
+    build({ config, filter: '**/*.scss' }, { console }).on('finish', () => {
       compare('filtered')
+      done()
+    })
+  })
+
+  it('outputs log', done => {
+    build({ config }, { console }).on('finish', () => {
+      td.verify(console.error(), { times: 0, ignoreExtraArgs: true })
+      td.verify(console.log('Building src -> dist'), { times: 1 })
+      td.verify(console.log(
+        td.matchers.contains('Finished')
+      ), { times: 1 })
       done()
     })
   })
