@@ -1,6 +1,7 @@
 'use strict'
 
 const fse = require('fs-extra')
+const td = require('testdouble')
 const watch = require('../../lib/cli/watch').handler
 const e2eHelpers = require('../helpers/e2e')
 const updateSrc = e2eHelpers.updateSrc
@@ -13,11 +14,15 @@ describe('Build CLI', () => {
 
   let revert, watcher
 
-  function run (options, cbs) {
+  function run (options, cb) {
     if (watcher) {
       watcher.close()
     }
-    watcher = watch(options, cbs)
+    const console = {
+      log: td.function(),
+      error: td.function()
+    }
+    watcher = watch(options, { cb, console })
   }
 
   function update () {
