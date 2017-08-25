@@ -3,6 +3,7 @@
 const http = require('http')
 const fse = require('fs-extra')
 const path = require('path')
+const td = require('testdouble')
 const dev = require('../../lib/cli/dev').handler
 const waitForData = require('../helpers').waitForData
 
@@ -22,11 +23,18 @@ describe('Dev CLI', () => {
 
   let bs, watcher
   function run (options, cb) {
+    const console = {
+      log: td.function(),
+      error: td.function()
+    }
+
     const res = dev({
       config: options.config,
       port: options.port || 3000,
       'base-path': options['base-path'] || '/',
       _debug: true
+    }, {
+      console
     })
 
     bs = res.bs
