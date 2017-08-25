@@ -40,7 +40,7 @@ gulp.task('serve', ['pug', 'sass'], () => {
 })
 ```
 
-While the `gulpfile.js` will be complicated as your web site glows, the Houl task file can be kept simple. The Houl task file that will do the same things as the `gulpfile.js` is like below:
+While the `gulpfile.js` will be complicated as your web site grows, the Houl task file can be kept simple. The Houl task file that will do the same things as the `gulpfile.js` is like below:
 
 ```js
 const pug = require('gulp-pug')
