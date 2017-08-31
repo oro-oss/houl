@@ -182,4 +182,49 @@ describe('Using browsersync', () => {
       }))
     })
   })
+
+  describe('with base path and proxy', () => {
+    let proxy
+    beforeAll(done => {
+      const proxyConfig = Config.create({
+        input: 'sources',
+        output: 'dist',
+        dev: {
+          proxy: {
+            '/': {
+              target: 'http://localhost:61234/',
+              logLevel: 'silent'
+            }
+          }
+        }
+      }, {}, { base })
+
+      proxy = create(proxyConfig, {
+        port: 51234,
+        open: false,
+        logLevel: 'silent'
+      }, mockResolver, '/assets')
+
+      bs = create(config, {
+        port: 61234,
+        open: false,
+        logLevel: 'silent'
+      }, mockResolver, '/')
+
+      bs.emitter.on('init', done)
+    })
+
+    afterAll(() => {
+      proxy.exit()
+      bs.exit()
+    })
+
+    it('fallbacks to proxy if the request does not match base path', done => {
+      http.get(reqTo('/sources/index.html'), waitForData((res, data) => {
+        expect(res.statusCode).toBe(200)
+        expectDataToBeFile(data, 'sources/index.html')
+        done()
+      }))
+    })
+  })
 })
