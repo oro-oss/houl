@@ -1,7 +1,7 @@
 {
   "input": "src",
   "output": "dist",
-  "exclude": "**/_*/**",
+  "exclude": ["**/_*/**", "**/_*"],
   "taskFile": "./houl.task.js",
   "rules": {
     "js": {
