@@ -4,11 +4,12 @@ const fse = require('fs-extra')
 const td = require('testdouble')
 const watch = require('../../lib/cli/watch').handler
 const e2eHelpers = require('../helpers/e2e')
+const addSrc = e2eHelpers.addSrc
 const updateSrc = e2eHelpers.updateSrc
 const removeDist = e2eHelpers.removeDist
 const compare = e2eHelpers.compare
 
-describe('Build CLI', () => {
+describe('Watch CLI', () => {
   const config = 'test/fixtures/e2e/houl.config.json'
   const cache = 'test/fixtures/e2e/.cache.json'
 
@@ -23,6 +24,10 @@ describe('Build CLI', () => {
       error: td.function()
     }
     watcher = watch(options, { cb, console })
+  }
+
+  function add () {
+    revert = addSrc()
   }
 
   function update () {
@@ -54,6 +59,19 @@ describe('Build CLI', () => {
       },
       () => {
         compare('updated')
+        done()
+      }
+    ]))
+  })
+
+  it('should build a newly added file', done => {
+    run({ config }, observe([
+      () => {
+        compare('dev')
+        add()
+      },
+      () => {
+        compare('added')
         done()
       }
     ]))
