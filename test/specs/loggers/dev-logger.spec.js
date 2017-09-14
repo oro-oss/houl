@@ -15,6 +15,19 @@ describe('Dev Logger', () => {
     td.verify(console.log('Houl dev server is running at http://localhost:8080'))
   })
 
+  it('should log that a source file is added', () => {
+    const console = { log: td.function() }
+    const logger = new DevLogger({
+      input: '/path/to/input'
+    }, {
+      console
+    })
+
+    logger.addFile('/path/to/input/js/index.js')
+
+    td.verify(console.log(color.yellow('ADDED') + ' /js/index.js'))
+  })
+
   it('should log that a source file is updated', () => {
     const console = { log: td.function() }
     const logger = new DevLogger({

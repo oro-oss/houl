@@ -18,6 +18,19 @@ describe('Watch Logger', () => {
     td.verify(console.log('Houl is watching the source directory: input/'))
   })
 
+  it('should log that a source file was added', () => {
+    const console = { log: td.function() }
+    const logger = new WatchLogger({
+      base: '/path/to',
+      input: '/path/to/input'
+    }, {
+      console
+    })
+
+    logger.addFile('/path/to/input/index.html')
+    td.verify(console.log(color.yellow('ADDED') + ' /input/index.html'))
+  })
+
   it('should log that a source file was updated', () => {
     const console = { log: td.function() }
     const logger = new WatchLogger({
