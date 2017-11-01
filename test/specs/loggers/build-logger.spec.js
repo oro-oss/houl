@@ -41,6 +41,28 @@ describe('Build Logger', () => {
     td.verify(console.log('Finished in 12.34s'))
   })
 
+  it('should accurate time when its unit is minutes', () => {
+    const console = { log: td.function() }
+    const now = td.function()
+
+    td.when(now()).thenReturn(0, 120000)
+
+    const logger = new BuildLogger({
+      base: '/base',
+      input: '/base/to/src',
+      output: '/base/to/dist'
+    }, {
+      console,
+      now
+    })
+
+    logger.start()
+    td.verify(console.log('Building to/src -> to/dist'))
+
+    logger.finish()
+    td.verify(console.log('Finished in 2m'))
+  })
+
   it('should log errors', () => {
     const console = {
       log: td.function(),
