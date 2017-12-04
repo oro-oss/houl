@@ -3,6 +3,7 @@
 const td = require('testdouble')
 const color = require('../../../lib/color')
 const DevLogger = require('../../../lib/loggers/dev-logger')
+const externalIp = require('../../../lib/util').getIp()
 
 describe('Dev Logger', () => {
   it('should log that dev server starts', () => {
@@ -11,8 +12,11 @@ describe('Dev Logger', () => {
       console
     })
 
-    logger.startDevServer(8080)
-    td.verify(console.log('Houl dev server is running at http://localhost:8080'))
+    logger.startDevServer(8080, externalIp)
+    td.verify(console.log('Houl dev server is running at:\nLocal: http://localhost:8080'))
+    externalIp.forEach((ip) => {
+      td.verify(console.log(`External: http://${ip}:8080`))
+    })
   })
 
   it('should log that a source file is added', () => {
