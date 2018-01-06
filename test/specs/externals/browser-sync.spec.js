@@ -21,6 +21,16 @@ function expectDataToBeFile (data, filename) {
   )
 }
 
+function createWaitCallback (n, done) {
+  let count = 0
+  return () => {
+    count++
+    if (count === n) {
+      done()
+    }
+  }
+}
+
 describe('Using browsersync', () => {
   const config = Config.create({
     input: '',
@@ -158,7 +168,9 @@ describe('Using browsersync', () => {
         logLevel: 'silent'
       }, mockResolver, '/')
 
-      bs.emitter.on('init', done)
+      const cb = createWaitCallback(2, done)
+      proxy.emitter.on('init', cb)
+      bs.emitter.on('init', cb)
     })
 
     afterAll(() => {
@@ -211,7 +223,9 @@ describe('Using browsersync', () => {
         logLevel: 'silent'
       }, mockResolver, '/')
 
-      bs.emitter.on('init', done)
+      const cb = createWaitCallback(2, done)
+      proxy.emitter.on('init', cb)
+      bs.emitter.on('init', cb)
     })
 
     afterAll(() => {
