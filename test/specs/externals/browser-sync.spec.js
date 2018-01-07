@@ -37,6 +37,9 @@ describe('Using browsersync', () => {
     output: 'dist',
     rules: {
       js: 'js'
+    },
+    dev: {
+      port: 51234
     }
   }, {
     js: stream => {
@@ -56,10 +59,9 @@ describe('Using browsersync', () => {
   describe('without base path', () => {
     beforeAll(done => {
       bs = create(config, {
-        port: 51234,
         open: false,
         logLevel: 'silent'
-      }, mockResolver, '/')
+      }, mockResolver)
 
       bs.emitter.on('init', done)
     })
@@ -103,11 +105,12 @@ describe('Using browsersync', () => {
 
   describe('with base path', () => {
     beforeAll(done => {
-      bs = create(config, {
-        port: 51234,
+      bs = create(config.extend({
+        basePath: '/path/to/base/'
+      }), {
         open: false,
         logLevel: 'silent'
-      }, mockResolver, '/path/to/base/')
+      }, mockResolver)
 
       bs.emitter.on('init', done)
     })
@@ -152,21 +155,22 @@ describe('Using browsersync', () => {
               target: 'http://localhost:61234/',
               logLevel: 'silent'
             }
-          }
+          },
+          port: 51234
         }
       }, {}, { base })
 
       proxy = create(proxyConfig, {
-        port: 51234,
         open: false,
         logLevel: 'silent'
-      }, mockResolver, '/')
+      }, mockResolver)
 
-      bs = create(config, {
-        port: 61234,
+      bs = create(config.extend({
+        port: 61234
+      }), {
         open: false,
         logLevel: 'silent'
-      }, mockResolver, '/')
+      }, mockResolver)
 
       const cb = createWaitCallback(2, done)
       proxy.emitter.on('init', cb)
@@ -207,21 +211,23 @@ describe('Using browsersync', () => {
               target: 'http://localhost:61234/',
               logLevel: 'silent'
             }
-          }
+          },
+          port: 51234,
+          basePath: '/assets'
         }
       }, {}, { base })
 
       proxy = create(proxyConfig, {
-        port: 51234,
         open: false,
         logLevel: 'silent'
-      }, mockResolver, '/assets')
+      }, mockResolver)
 
-      bs = create(config, {
-        port: 61234,
+      bs = create(config.extend({
+        port: 61234
+      }), {
         open: false,
         logLevel: 'silent'
-      }, mockResolver, '/')
+      }, mockResolver)
 
       const cb = createWaitCallback(2, done)
       proxy.emitter.on('init', cb)
