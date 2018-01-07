@@ -19,4 +19,20 @@ describe('Util', () => {
       expect(util.dropWhile([0, 0, 0], isZero)).toEqual([])
     })
   })
+
+  describe('filterProps', () => {
+    const isNotZero = item => item !== 0
+
+    it('filters object properties', () => {
+      const obj = {
+        foo: 0,
+        bar: 1,
+        baz: 'str'
+      }
+      expect(util.filterProps(obj, isNotZero)).toEqual({
+        bar: 1,
+        baz: 'str'
+      })
+    })
+  })
 })
