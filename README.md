@@ -191,6 +191,7 @@ preset         | Preset package name or an object that specify a preset
 preset.name    | Preset package name
 preset.options | Preset options
 rules          | Specify how to transform source files
+dev            | Dev server related options (See [Dev options](#dev-options) for details)
 
 #### Rules
 
@@ -245,6 +246,34 @@ module.exports = function(options) {
   }
 }
 ```
+
+#### Dev options
+
+You can provide dev server related options via `dev` field. The `dev` field has an object which can include the following properties.
+
+Key      | Description
+-------- | ---
+proxy    | Proxy configurations which is compatible with [`node-http-proxy` options](https://github.com/nodejitsu/node-http-proxy#options).
+port     | Port number of the dev server as same as the `--port` cli option.
+basePath | Base path of the dev server as same as the `--base-path` cli option.
+
+The below is an example of `proxy` configuration:
+
+```json
+{
+  "dev": {
+    "proxy": {
+      "/foo": "http://foo.com/",
+      "/bar": {
+        "target": "https://bar.com/",
+        "secure": true
+      }
+    }
+  }
+}
+```
+
+The key of the `proxy` object indicates which requests for the path should be proxied. The above config let the dev server proxy requests under `/foo` to `http://foo.com/` and `/bar` to `https://bar.com/`.
 
 #### Config Example
 
