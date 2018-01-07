@@ -320,4 +320,42 @@ describe('Config model', () => {
 
     expect(c.proxy).toEqual([])
   })
+
+  it('extends itself with the provided object', () => {
+    const c = Config.create({
+      input: 'src',
+      output: 'dist'
+    }, {}, { base: '/' })
+
+    expect(c.input).toBe('/src')
+    expect(c.output).toBe('/dist')
+    expect(c.filter).toBe('**/*')
+    const e = c.extend({ filter: 'test/**/*' })
+    expect(e.input).toBe('/src')
+    expect(e.output).toBe('/dist')
+    expect(e.filter).toBe('test/**/*')
+  })
+
+  it('ignores null or undefined value for extend', () => {
+    const c = Config.create({
+      input: 'src',
+      output: 'dist'
+    }, {}, {
+      base: '/'
+    }).extend({
+      filter: 'test/**/*'
+    })
+
+    expect(c.input).toBe('/src')
+    expect(c.output).toBe('/dist')
+    expect(c.filter).toBe('test/**/*')
+    const e1 = c.extend({ filter: null })
+    expect(e1.input).toBe('/src')
+    expect(e1.output).toBe('/dist')
+    expect(e1.filter).toBe('test/**/*')
+    const e2 = c.extend({ filter: undefined })
+    expect(e2.input).toBe('/src')
+    expect(e2.output).toBe('/dist')
+    expect(e2.filter).toBe('test/**/*')
+  })
 })
