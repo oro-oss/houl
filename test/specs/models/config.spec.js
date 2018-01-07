@@ -321,6 +321,32 @@ describe('Config model', () => {
     expect(c.proxy).toEqual([])
   })
 
+  it('resolves port config', () => {
+    const c = Config.create({
+      dev: { port: 51234 }
+    }, {})
+
+    expect(c.port).toBe(51234)
+  })
+
+  it('provides 3000 as a default port number', () => {
+    const c = Config.create({}, {})
+    expect(c.port).toBe(3000)
+  })
+
+  it('resolves basePath config', () => {
+    const c = Config.create({
+      dev: { basePath: '/path/to/base' }
+    }, {})
+
+    expect(c.basePath).toBe('/path/to/base')
+  })
+
+  it('provides \'/\' as a default base path', () => {
+    const c = Config.create({}, {})
+    expect(c.basePath).toBe('/')
+  })
+
   it('extends itself with the provided object', () => {
     const c = Config.create({
       input: 'src',
