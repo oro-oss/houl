@@ -23,6 +23,11 @@ describe('Config', () => {
       .toThrowError(/test\.coffee is non-supported file format/)
   })
 
+  it('throws if no config file is found', () => {
+    expect(() => read('not-exist.json'))
+      .toThrowError(/not-exist\.json is not found/)
+  })
+
   it('loads a function style config', () => {
     const config = read('preset-function.config.js')
     expect(config.rules.baz).not.toBe(undefined)

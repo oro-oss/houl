@@ -34,7 +34,7 @@ describe('Build CLI', () => {
   })
 
   it('should build in develop mode', done => {
-    build({ config }, { console }).on('finish', () => {
+    build({ config }, { console }).then(() => {
       compare('dev')
       done()
     })
@@ -44,17 +44,17 @@ describe('Build CLI', () => {
     build({
       config,
       production: true
-    }, { console }).on('finish', () => {
+    }, { console }).then(() => {
       compare('prod')
       done()
     })
   })
 
   it('should not build cached files', done => {
-    build({ config, cache }, { console }).on('finish', () => {
+    build({ config, cache }, { console }).then(() => {
       removeDist()
       revert = updateSrc()
-      build({ config, cache }, { console }).on('finish', () => {
+      build({ config, cache }, { console }).then(() => {
         compare('cache')
         done()
       })
@@ -62,21 +62,21 @@ describe('Build CLI', () => {
   })
 
   it('can output dot files', done => {
-    build({ config, dot: true }, { console }).on('finish', () => {
+    build({ config, dot: true }, { console }).then(() => {
       compare('dot')
       done()
     })
   })
 
   it('can filter input files', done => {
-    build({ config, filter: '**/*.scss' }, { console }).on('finish', () => {
+    build({ config, filter: '**/*.scss' }, { console }).then(() => {
       compare('filtered')
       done()
     })
   })
 
   it('outputs log', done => {
-    build({ config }, { console }).on('finish', () => {
+    build({ config }, { console }).then(() => {
       td.verify(console.error(), { times: 0, ignoreExtraArgs: true })
       td.verify(console.log('Building src -> dist'), { times: 1 })
       td.verify(console.log(
