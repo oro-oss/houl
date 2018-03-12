@@ -45,7 +45,7 @@
     "browser-sync": "^2.18.7",
     "chokidar": "^2.0.0",
     "hash-sum": "^1.0.2",
-    "http-proxy-middleware": "^0.17.4",
+    "http-proxy-middleware": "^0.18.0",
     "mime": "^2.2.0",
     "minimatch": "^3.0.3",
     "progeny": "^0.12.0",
