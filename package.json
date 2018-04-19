@@ -38,7 +38,7 @@
     "eslint-config-ktsn": "^1.0.2",
     "fs-extra": "^5.0.0",
     "jasmine": "^3.0.0",
-    "normalize-path": "^2.0.1",
+    "normalize-path": "^3.0.0",
     "testdouble": "^3.2.2"
   },
   "dependencies": {
