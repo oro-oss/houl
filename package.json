@@ -49,6 +49,7 @@
     "mime": "^2.3.1",
     "minimatch": "^3.0.4",
     "progeny": "^0.12.0",
+    "readable-stream": "^2.3.6",
     "vinyl-fs": "^3.0.2",
     "yargs": "^11.0.0"
   }
