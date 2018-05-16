@@ -7,6 +7,9 @@ const td = require('testdouble')
 const transform = require('../../helpers').transform
 const waitForData = require('../../helpers').waitForData
 const Config = require('../../../lib/models/config')
+const Cache = require('../../../lib/cache')
+const DepResolver = require('../../../lib/dep-resolver')
+const DepCache = require('../../../lib/dep-cache')
 const create = require('../../../lib/externals/browser-sync')
 
 const base = path.resolve(__dirname, '../../fixtures')
@@ -51,8 +54,12 @@ describe('Using browsersync', () => {
     }
   }, { base })
 
-  const mockResolver = {
-    register: td.function()
+  let cache, depResolver
+  const createDepCache = () => {
+    cache = new Cache()
+    depResolver = DepResolver.create(config)
+    depResolver.register = td.function(depResolver.register.bind(depResolver))
+    return new DepCache(cache, depResolver, () => '')
   }
 
   let bs
@@ -61,7 +68,7 @@ describe('Using browsersync', () => {
       bs = create(config, {
         open: false,
         logLevel: 'silent'
-      }, mockResolver)
+      }, createDepCache())
 
       bs.emitter.on('init', done)
     })
@@ -97,7 +104,7 @@ describe('Using browsersync', () => {
       http.get(reqTo('/sources/index.scss'), () => {
         const absPath = path.resolve(base, 'sources/index.scss')
         const content = fs.readFileSync(absPath, 'utf8')
-        td.verify(mockResolver.register(absPath, content))
+        td.verify(depResolver.register(absPath, content))
         done()
       })
     })
@@ -110,7 +117,7 @@ describe('Using browsersync', () => {
       }), {
         open: false,
         logLevel: 'silent'
-      }, mockResolver)
+      }, createDepCache())
 
       bs.emitter.on('init', done)
     })
@@ -163,14 +170,14 @@ describe('Using browsersync', () => {
       proxy = create(proxyConfig, {
         open: false,
         logLevel: 'silent'
-      }, mockResolver)
+      }, createDepCache())
 
       bs = create(config.extend({
         port: 61234
       }), {
         open: false,
         logLevel: 'silent'
-      }, mockResolver)
+      }, createDepCache())
 
       const cb = createWaitCallback(2, done)
       proxy.emitter.on('init', cb)
@@ -220,14 +227,14 @@ describe('Using browsersync', () => {
       proxy = create(proxyConfig, {
         open: false,
         logLevel: 'silent'
-      }, mockResolver)
+      }, createDepCache())
 
       bs = create(config.extend({
         port: 61234
       }), {
         open: false,
         logLevel: 'silent'
-      }, mockResolver)
+      }, createDepCache())
 
       const cb = createWaitCallback(2, done)
       proxy.emitter.on('init', cb)
@@ -244,6 +251,57 @@ describe('Using browsersync', () => {
         expect(res.statusCode).toBe(200)
         expectDataToBeFile(data, 'sources/index.html')
         done()
+      }))
+    })
+  })
+
+  describe('cache', () => {
+    let callCount
+    beforeAll(done => {
+      const cacheConfig = Config.create({
+        input: '',
+        output: 'dist',
+        rules: {
+          js: 'js'
+        },
+        dev: {
+          port: 51234
+        }
+      }, {
+        js: stream => {
+          return stream.pipe(transform((file, encoding, callback) => {
+            callCount += 1
+            const source = file.contents.toString()
+            file.contents = Buffer.from('**transformed**\n' + source)
+            callback(null, file)
+          }))
+        }
+      }, { base })
+
+      bs = create(cacheConfig, {
+        open: false,
+        logLevel: 'silent'
+      }, createDepCache())
+
+      bs.emitter.on('init', done)
+    })
+
+    beforeEach(() => {
+      callCount = 0
+    })
+
+    afterAll(() => {
+      bs.exit()
+    })
+
+    it('caches response data and not transform multiple times', done => {
+      http.get(reqTo('/sources/index.js'), waitForData(() => {
+        expect(callCount).toBe(1)
+
+        http.get(reqTo('/sources/index.js'), waitForData(() => {
+          expect(callCount).toBe(1)
+          done()
+        }))
       }))
     })
   })
