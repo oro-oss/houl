@@ -57,4 +57,19 @@ describe('Cache', () => {
       'foo.txt': 'abcdef'
     })
   })
+
+  it('stores additional data when register cache', () => {
+    const cache = new Cache()
+
+    cache.register('foo.txt', 'abc', 'def')
+    expect(cache.get('foo.txt')).toBe('def')
+  })
+
+  it('clears cached data', () => {
+    const cache = new Cache()
+
+    cache.register('foo.txt', 'abc', 'def')
+    cache.clear('foo.txt')
+    expect(cache.get('foo.txt')).toBe(undefined)
+  })
 })
