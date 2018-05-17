@@ -4,8 +4,7 @@ const path = require('path')
 const fs = require('fs')
 const http = require('http')
 const td = require('testdouble')
-const transform = require('../../helpers').transform
-const waitForData = require('../../helpers').waitForData
+const { transform, waitForData } = require('../../helpers')
 const Config = require('../../../lib/models/config')
 const Cache = require('../../../lib/cache')
 const DepResolver = require('../../../lib/dep-resolver')
@@ -22,6 +21,16 @@ function expectDataToBeFile (data, filename) {
   expect(data).toBe(
     fs.readFileSync(path.join(base, filename), 'utf8')
   )
+}
+
+function updateFile (filename, data) {
+  const filePath = path.join(base, filename)
+  const original = fs.readFileSync(filePath)
+  fs.writeFileSync(filePath, data)
+
+  return () => {
+    fs.writeFileSync(filePath, original)
+  }
 }
 
 function createWaitCallback (n, done) {
@@ -256,8 +265,10 @@ describe('Using browsersync', () => {
   })
 
   describe('cache', () => {
-    let callCount
-    beforeAll(done => {
+    let callCount, revertUpdate
+    beforeEach(done => {
+      callCount = 0
+
       const cacheConfig = Config.create({
         input: '',
         output: 'dist',
@@ -286,11 +297,12 @@ describe('Using browsersync', () => {
       bs.emitter.on('init', done)
     })
 
-    beforeEach(() => {
-      callCount = 0
-    })
+    afterEach(() => {
+      if (revertUpdate) {
+        revertUpdate()
+        revertUpdate = null
+      }
 
-    afterAll(() => {
       bs.exit()
     })
 
@@ -300,6 +312,19 @@ describe('Using browsersync', () => {
 
         http.get(reqTo('/sources/index.js'), waitForData(() => {
           expect(callCount).toBe(1)
+          done()
+        }))
+      }))
+    })
+
+    it('updates the cache when the requested file was updated', done => {
+      http.get(reqTo('/sources/index.js'), waitForData(() => {
+        expect(callCount).toBe(1)
+        revertUpdate = updateFile('sources/index.js', 'alert("Hello")')
+
+        http.get(reqTo('/sources/index.js'), waitForData((res, data) => {
+          expect(callCount).toBe(2)
+          expect(data.toString()).toBe('**transformed**\nalert("Hello")')
           done()
         }))
       }))
