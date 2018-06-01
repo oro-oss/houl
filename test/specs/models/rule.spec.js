@@ -4,7 +4,7 @@ const Rule = require('../../../lib/models/rule')
 
 describe('Rule model', () => {
   it('has correct properties', () => {
-    const r = new Rule({
+    const r = Rule.create({
       task: 'foo',
       outputExt: 'css',
       exclude: '**/vendor/**',
@@ -28,7 +28,7 @@ describe('Rule model', () => {
   })
 
   it('accepts array formed exclude', () => {
-    const r = new Rule({
+    const r = Rule.create({
       task: 'foo',
       exclude: ['**/vendor/**', '**/.DS_Store']
     }, 'js', {
@@ -39,7 +39,7 @@ describe('Rule model', () => {
   })
 
   it('deals with string format', () => {
-    const r = new Rule('foo', 'js', {
+    const r = Rule.create('foo', 'js', {
       foo: () => 'foo'
     })
     expect(r.taskName).toBe('foo')
@@ -48,7 +48,7 @@ describe('Rule model', () => {
 
   it('asserts task is appear', () => {
     expect(() => {
-      new Rule({
+      Rule.create({
         task: 'foo'
       }, 'js', {
         bar: () => 'bar'
@@ -57,7 +57,7 @@ describe('Rule model', () => {
   })
 
   it('provides options to the task', () => {
-    const r = new Rule({
+    const r = Rule.create({
       task: 'foo',
       options: {
         test: 'success'
@@ -69,7 +69,7 @@ describe('Rule model', () => {
   })
 
   it('converts output path to input path', () => {
-    const r = new Rule({
+    const r = Rule.create({
       task: 'foo',
       outputExt: 'css'
     }, 'scss', {
@@ -80,7 +80,7 @@ describe('Rule model', () => {
   })
 
   it('converts input path to output path', () => {
-    const r = new Rule({
+    const r = Rule.create({
       task: 'foo',
       outputExt: 'css'
     }, 'scss', {
@@ -91,7 +91,7 @@ describe('Rule model', () => {
   })
 
   it('checks whether the given path is excluded or not', () => {
-    const r = new Rule({
+    const r = Rule.create({
       task: 'foo',
       exclude: ['**/vendor/**', '**/_*']
     }, 'js', {
@@ -101,6 +101,32 @@ describe('Rule model', () => {
     expect(r.isExclude('src/js/vendor/index.js')).toBe(true)
     expect(r.isExclude('src/js/_hidden.js')).toBe(true)
     expect(r.isExclude('src/js/index.js')).toBe(false)
+  })
+
+  it('throws a task not found', () => {
+    expect(() => {
+      Rule.create({
+        task: 'foo'
+      }, 'js', {
+        bar: () => 'bar'
+      })
+    }).toThrowError(/Task "foo" is not defined/)
+  })
+
+  it('throws a task in merged rule not found', () => {
+    const parent = Rule.create({
+      task: 'foo'
+    }, 'js', {
+      foo: () => 'foo'
+    })
+
+    expect(() => {
+      Rule.create({
+        task: 'foo'
+      }, 'js', {
+        bar: () => 'bar'
+      }, parent)
+    }).toThrowError(/Task "foo" is not defined/)
   })
 
   describe('Empty rule', () => {

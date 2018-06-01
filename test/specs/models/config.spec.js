@@ -167,6 +167,91 @@ describe('Config model', () => {
     expect(c.rules.png.task()).toBe('qux')
   })
 
+  it('merges rules fields with task name', () => {
+    const preset = Config.create({
+      rules: {
+        js: 'script'
+      }
+    }, {
+      script: () => 'preset'
+    })
+
+    const c = Config.create({
+      rules: {
+        js: {
+          exclude: '_*'
+        }
+      }
+    }, {
+      script: () => 'child'
+    }, {
+      preset
+    })
+
+    expect(c.rules.js.task()).toBe('preset')
+    expect(c.rules.js.exclude).toEqual(['_*'])
+  })
+
+  it('concats excludes field on rules', () => {
+    const preset = Config.create({
+      rules: {
+        js: {
+          task: 'script',
+          exclude: '_*'
+        }
+      }
+    }, {
+      script: () => 'preset'
+    })
+
+    const c = Config.create({
+      rules: {
+        js: {
+          exclude: ['test.js']
+        }
+      }
+    }, {}, {
+      preset
+    })
+
+    expect(c.rules.js.exclude).toEqual(['_*', 'test.js'])
+  })
+
+  it('merges progeny options on rules', () => {
+    const preset = Config.create({
+      rules: {
+        js: {
+          task: 'script',
+          progeny: {
+            regexp: /foo/,
+            altPaths: ['/path/foo']
+          }
+        }
+      }
+    }, {
+      script: () => 'preset'
+    })
+
+    const c = Config.create({
+      rules: {
+        js: {
+          progeny: {
+            regexp: /bar/,
+            altPaths: ['/path/bar'],
+            skipComments: true
+          }
+        }
+      }
+    }, {}, {
+      preset
+    })
+
+    const resolved = c.rules.js.progeny
+    expect(resolved.regexp).toEqual(/bar/)
+    expect(resolved.altPaths).toEqual(['/path/foo', '/path/bar'])
+    expect(resolved.skipComments).toBe(true)
+  })
+
   it('finds rule by input file path', () => {
     const c = Config.create({
       rules: {
