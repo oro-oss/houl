@@ -4,7 +4,7 @@ module.exports = {
   preset: {
     name: './preset-function.config.js',
     modifyConfig: config => {
-      config.rules.baz = null
+      delete config.rules.baz
     }
   }
 }
