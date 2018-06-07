@@ -9,5 +9,5 @@ npm test -s
 
 npm version $type
 npm publish
-git push origin master --tags
+git push origin master
 conventional-github-releaser -p angular
