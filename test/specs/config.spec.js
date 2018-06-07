@@ -45,7 +45,7 @@ describe('Config', () => {
 
   it('modifies a preset object', () => {
     const config = read('normal-with-preset-modify.js')
-    expect(config.rules.js).toBe(undefined)
+    expect(config.rules.baz).toBe(undefined)
   })
 
   it('allows an empty taskFile field', () => {
