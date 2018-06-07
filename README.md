@@ -219,6 +219,8 @@ Houl can load external preset that distributed on NPM. You can load it by specif
 }
 ```
 
+##### Specifying preset options
+
 A preset receives any options value if you set a `options` property in the `preset` field.
 
 ```json
@@ -242,6 +244,66 @@ module.exports = function(options) {
     exclude: options.exclude,
     rules: {
       // ...
+    }
+  }
+}
+```
+
+##### Extending preset config
+
+You may want to extend an existing preset rules to adapt your own needs. In that case, you just specify additional options for corresponding rules.
+
+For example, when the preset config is like the following:
+
+```js
+{
+  "rules": {
+    "js": {
+      "task": "script"
+    }
+  }
+}
+```
+
+The user config:
+
+```js
+{
+  "preset": "houl-preset-foo",
+  "rules": {
+    "js": {
+      "exclude": "**/_*/**"
+    }
+  }
+}
+```
+
+The above user config is the same as the following config:
+
+```js
+{
+  "rules": {
+    "js": {
+      "task": "script",
+      "exclude": "**/_*/**"
+    }
+  }
+}
+```
+
+If you want to tweak presets more flexible, you can use `preset.modifyConfig` option. `modifyConfig` expects a function that receives a raw preset config object as the 1st argument. You modify the preset config in the function or optionally return new config object.
+
+```js
+module.exports = {
+  input: './src',
+  output: './dist',
+  preset: {
+    name: 'houl-preset-foo',
+    modifyConfig: config => {
+      // Remove `foo` task in the preset
+      // You have to use `delete` statement instead of
+      // assigning `null` to remove a task.
+      delete config.rules.foo
     }
   }
 }
