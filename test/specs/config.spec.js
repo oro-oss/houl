@@ -43,6 +43,11 @@ describe('Config', () => {
     expect(config.rules.baz.task()).toBe('bazOptions')
   })
 
+  it('modifies a preset object', () => {
+    const config = read('normal-with-preset-modify.js')
+    expect(config.rules.baz).toBe(undefined)
+  })
+
   it('allows an empty taskFile field', () => {
     expect(() => {
       read('no-taskfile.js')
