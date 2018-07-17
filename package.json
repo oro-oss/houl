@@ -36,7 +36,7 @@
     "conventional-github-releaser": "^3.0.0",
     "eslint": "^5.0.0",
     "eslint-config-ktsn": "^1.0.3",
-    "fs-extra": "^6.0.0",
+    "fs-extra": "^7.0.0",
     "jasmine": "^3.1.0",
     "normalize-path": "^3.0.0",
     "testdouble": "^3.8.1"
