@@ -6,13 +6,16 @@ const BuildLogger = require('../../../lib/loggers/build-logger')
 describe('Build Logger', () => {
   it('should log that a build is started', () => {
     const console = { log: td.function() }
-    const logger = new BuildLogger({
-      base: '/path/to/base',
-      input: '/path/to/base/src',
-      output: '/path/to/base/dist'
-    }, {
-      console
-    })
+    const logger = new BuildLogger(
+      {
+        base: '/path/to/base',
+        input: '/path/to/base/src',
+        output: '/path/to/base/dist'
+      },
+      {
+        console
+      }
+    )
 
     logger.start()
 
@@ -25,14 +28,17 @@ describe('Build Logger', () => {
 
     td.when(now()).thenReturn(0, 12345)
 
-    const logger = new BuildLogger({
-      base: '/base',
-      input: '/base/to/src',
-      output: '/base/to/dist'
-    }, {
-      console,
-      now
-    })
+    const logger = new BuildLogger(
+      {
+        base: '/base',
+        input: '/base/to/src',
+        output: '/base/to/dist'
+      },
+      {
+        console,
+        now
+      }
+    )
 
     logger.start()
     td.verify(console.log('Building to/src -> to/dist'))
@@ -47,14 +53,17 @@ describe('Build Logger', () => {
 
     td.when(now()).thenReturn(0, 120000)
 
-    const logger = new BuildLogger({
-      base: '/base',
-      input: '/base/to/src',
-      output: '/base/to/dist'
-    }, {
-      console,
-      now
-    })
+    const logger = new BuildLogger(
+      {
+        base: '/base',
+        input: '/base/to/src',
+        output: '/base/to/dist'
+      },
+      {
+        console,
+        now
+      }
+    )
 
     logger.start()
     td.verify(console.log('Building to/src -> to/dist'))
@@ -69,13 +78,16 @@ describe('Build Logger', () => {
       error: td.function()
     }
 
-    const logger = new BuildLogger({
-      base: '/path',
-      input: '/path/src',
-      output: '/path/dist'
-    }, {
-      console
-    })
+    const logger = new BuildLogger(
+      {
+        base: '/path',
+        input: '/path/src',
+        output: '/path/dist'
+      },
+      {
+        console
+      }
+    )
 
     logger.start()
     logger.error(new Error('Test 1'))

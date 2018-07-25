@@ -41,10 +41,13 @@ describe('Build CLI', () => {
   })
 
   it('should build in production mode', done => {
-    build({
-      config,
-      production: true
-    }, { console }).then(() => {
+    build(
+      {
+        config,
+        production: true
+      },
+      { console }
+    ).then(() => {
       compare('prod')
       done()
     })
@@ -79,9 +82,7 @@ describe('Build CLI', () => {
     build({ config }, { console }).then(() => {
       td.verify(console.error(), { times: 0, ignoreExtraArgs: true })
       td.verify(console.log('Building src -> dist'), { times: 1 })
-      td.verify(console.log(
-        td.matchers.contains('Finished')
-      ), { times: 1 })
+      td.verify(console.log(td.matchers.contains('Finished')), { times: 1 })
       done()
     })
   })

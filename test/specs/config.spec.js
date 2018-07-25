@@ -19,13 +19,15 @@ describe('Config', () => {
   })
 
   it('throws if try loading other file', () => {
-    expect(() => read('test.coffee'))
-      .toThrowError(/test\.coffee is non-supported file format/)
+    expect(() => read('test.coffee')).toThrowError(
+      /test\.coffee is non-supported file format/
+    )
   })
 
   it('throws if no config file is found', () => {
-    expect(() => read('not-exist.json'))
-      .toThrowError(/not-exist\.json is not found/)
+    expect(() => read('not-exist.json')).toThrowError(
+      /not-exist\.json is not found/
+    )
   })
 
   it('loads a function style config', () => {
@@ -55,34 +57,39 @@ describe('Config', () => {
   })
 
   it('search config file', () => {
-    function exists (pathname) {
+    function exists(pathname) {
       return '/path/houl.config.js' === normalize(pathname)
     }
 
-    expect(findConfig('/path/to/project', exists)).toBePath('/path/houl.config.js')
+    expect(findConfig('/path/to/project', exists)).toBePath(
+      '/path/houl.config.js'
+    )
   })
 
   it('also search json config file', () => {
-    function exists (pathname) {
+    function exists(pathname) {
       return '/path/houl.config.json' === normalize(pathname)
     }
 
-    expect(findConfig('/path/to/project', exists)).toBePath('/path/houl.config.json')
+    expect(findConfig('/path/to/project', exists)).toBePath(
+      '/path/houl.config.json'
+    )
   })
 
   it('prefers js config', () => {
-    function exists (pathname) {
-      return [
-        '/path/to/houl.config.json',
-        '/path/to/houl.config.js'
-      ].indexOf(normalize(pathname)) >= 0
+    function exists(pathname) {
+      return (
+        ['/path/to/houl.config.json', '/path/to/houl.config.js'].indexOf(
+          normalize(pathname)
+        ) >= 0
+      )
     }
 
     expect(findConfig('/path/to/', exists)).toBePath('/path/to/houl.config.js')
   })
 
   it('returns null if not found', () => {
-    function exists (pathname) {
+    function exists(pathname) {
       return '/path/to/houl.config.json' === normalize(pathname)
     }
 

@@ -15,7 +15,7 @@ describe('Watch CLI', () => {
 
   let revert, watcher
 
-  function run (options, cb) {
+  function run(options, cb) {
     if (watcher) {
       watcher.close()
     }
@@ -26,11 +26,11 @@ describe('Watch CLI', () => {
     watcher = watch(options, { cb, console })
   }
 
-  function add () {
+  function add() {
     revert = addSrc()
   }
 
-  function update () {
+  function update() {
     revert = updateSrc()
   }
 
@@ -52,66 +52,81 @@ describe('Watch CLI', () => {
   })
 
   it('should build all input files initially', done => {
-    run({ config }, observe([
-      () => {
-        compare('dev')
-        update()
-      },
-      () => {
-        compare('updated')
-        done()
-      }
-    ]))
+    run(
+      { config },
+      observe([
+        () => {
+          compare('dev')
+          update()
+        },
+        () => {
+          compare('updated')
+          done()
+        }
+      ])
+    )
   })
 
   it('should build a newly added file', done => {
-    run({ config }, observe([
-      () => {
-        compare('dev')
-        add()
-      },
-      () => {
-        compare('added')
-        done()
-      }
-    ]))
+    run(
+      { config },
+      observe([
+        () => {
+          compare('dev')
+          add()
+        },
+        () => {
+          compare('added')
+          done()
+        }
+      ])
+    )
   })
 
   it('should build only updated files', done => {
-    run({ config }, observe([
-      () => {
-        removeDist()
-        update()
-      },
-      () => {
-        compare('cache')
-        done()
-      }
-    ]))
+    run(
+      { config },
+      observe([
+        () => {
+          removeDist()
+          update()
+        },
+        () => {
+          compare('cache')
+          done()
+        }
+      ])
+    )
   })
 
   it('should build only updated files even if after restart the command', done => {
-    run({ config, cache }, observe([
-      () => {
-        // Equivalent with exiting watch command
-        watcher.close()
+    run(
+      { config, cache },
+      observe([
+        () => {
+          // Equivalent with exiting watch command
+          watcher.close()
 
-        removeDist()
-        update()
+          removeDist()
+          update()
 
-        // Equivalent with restart watch command
-        run({ config, cache }, observe([
-          () => {
-            compare('cache')
-            done()
-          }
-        ]))
-      }
-    ]))
+          // Equivalent with restart watch command
+          run(
+            { config, cache },
+            observe([
+              () => {
+                compare('cache')
+                done()
+              }
+            ])
+          )
+        }
+      ])
+    )
   })
 })
 
-function observe (cbs) {
+function observe(cbs) {
   const throttle = 10
   let timer = null
   let count = -1

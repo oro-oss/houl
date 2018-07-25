@@ -20,15 +20,17 @@ describe('Cache Stream', () => {
       { path: 'foo.txt', contents: 'abc' },
       { path: 'bar.txt', contents: 'def' },
       { path: 'foo.txt', contents: 'abc' }
-    ]).pipe(cacheStream(cache, depResolver, emptyStr))
-      .pipe(assertStream([
-        { path: 'foo.txt', contents: 'abc' },
-        { path: 'bar.txt', contents: 'def' },
-        { path: 'foo.txt', contents: 'abc' }
-      ]))
+    ])
+      .pipe(cacheStream(cache, depResolver, emptyStr))
+      .pipe(
+        assertStream([
+          { path: 'foo.txt', contents: 'abc' },
+          { path: 'bar.txt', contents: 'def' },
+          { path: 'foo.txt', contents: 'abc' }
+        ])
+      )
       .on('finish', done)
   })
-
 
   it('should not affect latter items even if previous item updates nested deps', done => {
     // last:    a.txt -> b.txt -> c.txt
@@ -65,11 +67,14 @@ describe('Cache Stream', () => {
     source([
       { path: 'a.txt', contents: 'b.txt' },
       { path: 'b.txt', contents: 'd.txt' }
-    ]).pipe(cacheStream(cache, depResolver, mockFs))
-      .pipe(assertStream([
-        { path: 'a.txt', contents: 'b.txt' },
-        { path: 'b.txt', contents: 'd.txt' }
-      ]))
+    ])
+      .pipe(cacheStream(cache, depResolver, mockFs))
+      .pipe(
+        assertStream([
+          { path: 'a.txt', contents: 'b.txt' },
+          { path: 'b.txt', contents: 'd.txt' }
+        ])
+      )
       .on('finish', done)
   })
 
@@ -98,12 +103,9 @@ describe('Cache Stream', () => {
     // deps          -> not updated
     // deps contents -> not updated
     // -> should be updated
-    source([
-      { path: 'foo.txt', contents: 'updated' }
-    ]).pipe(cacheStream(cache, depResolver, mockFs))
-      .pipe(assertStream([
-        { path: 'foo.txt', contents: 'updated' }
-      ]))
+    source([{ path: 'foo.txt', contents: 'updated' }])
+      .pipe(cacheStream(cache, depResolver, mockFs))
+      .pipe(assertStream([{ path: 'foo.txt', contents: 'updated' }]))
       .on('finish', done)
   })
 
@@ -132,12 +134,9 @@ describe('Cache Stream', () => {
     // deps          -> not updated
     // deps contents -> updated (bar.txt)
     // -> should be updated
-    source([
-      { path: 'foo.txt', contents: 'abc' }
-    ]).pipe(cacheStream(cache, depResolver, mockFs))
-      .pipe(assertStream([
-        { path: 'foo.txt', contents: 'abc' }
-      ]))
+    source([{ path: 'foo.txt', contents: 'abc' }])
+      .pipe(cacheStream(cache, depResolver, mockFs))
+      .pipe(assertStream([{ path: 'foo.txt', contents: 'abc' }]))
       .on('finish', done)
   })
 
@@ -166,9 +165,8 @@ describe('Cache Stream', () => {
     // deps          -> not updated
     // deps contents -> not updated
     // -> should not be updated
-    source([
-      { path: 'foo.txt', contents: 'abc' }
-    ]).pipe(cacheStream(cache, depResolver, mockFs))
+    source([{ path: 'foo.txt', contents: 'abc' }])
+      .pipe(cacheStream(cache, depResolver, mockFs))
       .pipe(assertStream([]))
       .on('finish', done)
   })
@@ -195,9 +193,8 @@ describe('Cache Stream', () => {
       }[pathName]
     }
 
-    source([
-      { path: 'foo.txt', contents: 'abc' }
-    ]).pipe(cacheStream(cache, depResolver, mockFs))
+    source([{ path: 'foo.txt', contents: 'abc' }])
+      .pipe(cacheStream(cache, depResolver, mockFs))
       .on('finish', () => {
         expect(cache.serialize()).toEqual({
           'foo.txt': 'abc',
@@ -233,9 +230,8 @@ describe('Cache Stream', () => {
       }[pathName]
     }
 
-    source([
-      { path: 'foo.txt', contents: 'updated' }
-    ]).pipe(cacheStream(cache, depResolver, mockFs))
+    source([{ path: 'foo.txt', contents: 'updated' }])
+      .pipe(cacheStream(cache, depResolver, mockFs))
       .on('finish', () => {
         expect(cache.serialize()).toEqual({
           'foo.txt': 'updated',
@@ -283,9 +279,9 @@ describe('Cache Stream', () => {
     })
 
     const test = () => {
-      return source([
-        { path: 'root.js', contents: stubFs['root.js'] }
-      ]).pipe(cacheStream(cache, depResolver, fileName => stubFs[fileName]))
+      return source([{ path: 'root.js', contents: stubFs['root.js'] }]).pipe(
+        cacheStream(cache, depResolver, fileName => stubFs[fileName])
+      )
     }
 
     // Save base cache at first

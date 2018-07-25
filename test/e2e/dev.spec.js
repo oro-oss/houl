@@ -7,11 +7,11 @@ const td = require('testdouble')
 const dev = require('../../lib/cli/dev').handler
 const waitForData = require('../helpers').waitForData
 
-function get (pathName, port, cb) {
+function get(pathName, port, cb) {
   http.get('http://localhost:' + port + pathName, waitForData(cb))
 }
 
-function assertData (data, file, type) {
+function assertData(data, file, type) {
   type = type || 'dev'
   expect(data).toBe(
     fse.readFileSync(path.resolve(__dirname, '../expected', type, file), 'utf8')
@@ -22,20 +22,23 @@ describe('Dev CLI', () => {
   const config = 'test/fixtures/e2e/houl.config.json'
 
   let bs, watcher
-  function run (options, cb) {
+  function run(options, cb) {
     const console = {
       log: td.function(),
       error: td.function()
     }
 
-    const res = dev({
-      config: options.config,
-      port: options.port || 3000,
-      'base-path': options['base-path'] || '/',
-      _debug: true
-    }, {
-      console
-    })
+    const res = dev(
+      {
+        config: options.config,
+        port: options.port || 3000,
+        'base-path': options['base-path'] || '/',
+        _debug: true
+      },
+      {
+        console
+      }
+    )
 
     bs = res.bs
     watcher = res.watcher
@@ -46,18 +49,20 @@ describe('Dev CLI', () => {
   }
 
   let revert
-  function update (file, cb) {
+  function update(file, cb) {
     const original = path.resolve(__dirname, '../fixtures/e2e/src', file)
     const updated = path.resolve(__dirname, '../fixtures/e2e/updated-src', file)
 
-    function handleError (fn) {
+    function handleError(fn) {
       return (err, res) => {
         if (err) throw err
         fn(res)
       }
     }
 
+    // prettier-ignore
     fse.readFile(original, 'utf8', handleError(temp => {
+      // prettier-ignore
       fse.copy(updated, original, handleError(() => {
         revert = () => {
           fse.writeFileSync(original, temp)

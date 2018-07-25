@@ -13,17 +13,15 @@ const create = require('../../../lib/externals/browser-sync')
 
 const base = path.resolve(__dirname, '../../fixtures')
 
-function reqTo (pathname) {
+function reqTo(pathname) {
   return 'http://localhost:51234' + pathname
 }
 
-function expectDataToBeFile (data, filename) {
-  expect(data).toBe(
-    fs.readFileSync(path.join(base, filename), 'utf8')
-  )
+function expectDataToBeFile(data, filename) {
+  expect(data).toBe(fs.readFileSync(path.join(base, filename), 'utf8'))
 }
 
-function updateFile (filename, data) {
+function updateFile(filename, data) {
   const filePath = path.join(base, filename)
   const original = fs.readFileSync(filePath)
   fs.writeFileSync(filePath, data)
@@ -33,7 +31,7 @@ function updateFile (filename, data) {
   }
 }
 
-function createWaitCallback (n, done) {
+function createWaitCallback(n, done) {
   let count = 0
   return () => {
     count++
@@ -44,24 +42,30 @@ function createWaitCallback (n, done) {
 }
 
 describe('Using browsersync', () => {
-  const config = Config.create({
-    input: '',
-    output: 'dist',
-    rules: {
-      js: 'js'
+  const config = Config.create(
+    {
+      input: '',
+      output: 'dist',
+      rules: {
+        js: 'js'
+      },
+      dev: {
+        port: 51234
+      }
     },
-    dev: {
-      port: 51234
-    }
-  }, {
-    js: stream => {
-      return stream.pipe(transform((file, encoding, callback) => {
-        const source = file.contents.toString()
-        file.contents = Buffer.from('**transformed**\n' + source)
-        callback(null, file)
-      }))
-    }
-  }, { base })
+    {
+      js: stream => {
+        return stream.pipe(
+          transform((file, encoding, callback) => {
+            const source = file.contents.toString()
+            file.contents = Buffer.from('**transformed**\n' + source)
+            callback(null, file)
+          })
+        )
+      }
+    },
+    { base }
+  )
 
   let cache, depResolver
   const createDepCache = () => {
@@ -74,10 +78,14 @@ describe('Using browsersync', () => {
   let bs
   describe('without base path', () => {
     beforeAll(done => {
-      bs = create(config, {
-        open: false,
-        logLevel: 'silent'
-      }, createDepCache())
+      bs = create(
+        config,
+        {
+          open: false,
+          logLevel: 'silent'
+        },
+        createDepCache()
+      )
 
       bs.emitter.on('init', done)
     })
@@ -87,18 +95,24 @@ describe('Using browsersync', () => {
     })
 
     it('starts dev server by the given port', done => {
-      http.get(reqTo('/sources/'), waitForData((res, data) => {
-        expect(res.statusCode).toBe(200)
-        expectDataToBeFile(data, 'sources/index.html')
-        done()
-      }))
+      http.get(
+        reqTo('/sources/'),
+        waitForData((res, data) => {
+          expect(res.statusCode).toBe(200)
+          expectDataToBeFile(data, 'sources/index.html')
+          done()
+        })
+      )
     })
 
     it('executes corresponding task to transform sources', done => {
-      http.get(reqTo('/sources/index.js'), waitForData((res, data) => {
-        expect(data).toMatch(/^\*\*transformed\*\*\n/)
-        done()
-      }))
+      http.get(
+        reqTo('/sources/index.js'),
+        waitForData((res, data) => {
+          expect(data).toMatch(/^\*\*transformed\*\*\n/)
+          done()
+        })
+      )
     })
 
     it('redirects if the specified path does not have trailing slash and it points to a directory', done => {
@@ -121,12 +135,16 @@ describe('Using browsersync', () => {
 
   describe('with base path', () => {
     beforeAll(done => {
-      bs = create(config.extend({
-        basePath: '/path/to/base/'
-      }), {
-        open: false,
-        logLevel: 'silent'
-      }, createDepCache())
+      bs = create(
+        config.extend({
+          basePath: '/path/to/base/'
+        }),
+        {
+          open: false,
+          logLevel: 'silent'
+        },
+        createDepCache()
+      )
 
       bs.emitter.on('init', done)
     })
@@ -136,11 +154,14 @@ describe('Using browsersync', () => {
     })
 
     it('allows to set base path of assets', done => {
-      http.get(reqTo('/path/to/base/sources/index.html'), waitForData((res, data) => {
-        expect(res.statusCode).toBe(200)
-        expectDataToBeFile(data, 'sources/index.html')
-        done()
-      }))
+      http.get(
+        reqTo('/path/to/base/sources/index.html'),
+        waitForData((res, data) => {
+          expect(res.statusCode).toBe(200)
+          expectDataToBeFile(data, 'sources/index.html')
+          done()
+        })
+      )
     })
 
     it('returns not found message if the req does not follow the base path', done => {
@@ -162,31 +183,43 @@ describe('Using browsersync', () => {
   describe('with proxy', () => {
     let proxy
     beforeAll(done => {
-      const proxyConfig = Config.create({
-        input: 'sources',
-        output: 'dist',
-        dev: {
-          proxy: {
-            '/': {
-              target: 'http://localhost:61234/',
-              logLevel: 'silent'
-            }
-          },
-          port: 51234
-        }
-      }, {}, { base })
+      const proxyConfig = Config.create(
+        {
+          input: 'sources',
+          output: 'dist',
+          dev: {
+            proxy: {
+              '/': {
+                target: 'http://localhost:61234/',
+                logLevel: 'silent'
+              }
+            },
+            port: 51234
+          }
+        },
+        {},
+        { base }
+      )
 
-      proxy = create(proxyConfig, {
-        open: false,
-        logLevel: 'silent'
-      }, createDepCache())
+      proxy = create(
+        proxyConfig,
+        {
+          open: false,
+          logLevel: 'silent'
+        },
+        createDepCache()
+      )
 
-      bs = create(config.extend({
-        port: 61234
-      }), {
-        open: false,
-        logLevel: 'silent'
-      }, createDepCache())
+      bs = create(
+        config.extend({
+          port: 61234
+        }),
+        {
+          open: false,
+          logLevel: 'silent'
+        },
+        createDepCache()
+      )
 
       const cb = createWaitCallback(2, done)
       proxy.emitter.on('init', cb)
@@ -199,51 +232,69 @@ describe('Using browsersync', () => {
     })
 
     it('proxies requests besed on proxy option', done => {
-      http.get(reqTo('/sources/index.html'), waitForData((res, data) => {
-        expect(res.statusCode).toBe(200)
-        expectDataToBeFile(data, 'sources/index.html')
-        done()
-      }))
+      http.get(
+        reqTo('/sources/index.html'),
+        waitForData((res, data) => {
+          expect(res.statusCode).toBe(200)
+          expectDataToBeFile(data, 'sources/index.html')
+          done()
+        })
+      )
     })
 
     it('prioritize self-resolved contents than proxy', done => {
-      http.get(reqTo('/sources/index.js'), waitForData((res, data) => {
-        expect(res.statusCode).toBe(200)
-        expectDataToBeFile(data, 'sources/sources/index.js')
-        done()
-      }))
+      http.get(
+        reqTo('/sources/index.js'),
+        waitForData((res, data) => {
+          expect(res.statusCode).toBe(200)
+          expectDataToBeFile(data, 'sources/sources/index.js')
+          done()
+        })
+      )
     })
   })
 
   describe('with base path and proxy', () => {
     let proxy
     beforeAll(done => {
-      const proxyConfig = Config.create({
-        input: 'sources',
-        output: 'dist',
-        dev: {
-          proxy: {
-            '/': {
-              target: 'http://localhost:61234/',
-              logLevel: 'silent'
-            }
-          },
-          port: 51234,
-          basePath: '/assets'
-        }
-      }, {}, { base })
+      const proxyConfig = Config.create(
+        {
+          input: 'sources',
+          output: 'dist',
+          dev: {
+            proxy: {
+              '/': {
+                target: 'http://localhost:61234/',
+                logLevel: 'silent'
+              }
+            },
+            port: 51234,
+            basePath: '/assets'
+          }
+        },
+        {},
+        { base }
+      )
 
-      proxy = create(proxyConfig, {
-        open: false,
-        logLevel: 'silent'
-      }, createDepCache())
+      proxy = create(
+        proxyConfig,
+        {
+          open: false,
+          logLevel: 'silent'
+        },
+        createDepCache()
+      )
 
-      bs = create(config.extend({
-        port: 61234
-      }), {
-        open: false,
-        logLevel: 'silent'
-      }, createDepCache())
+      bs = create(
+        config.extend({
+          port: 61234
+        }),
+        {
+          open: false,
+          logLevel: 'silent'
+        },
+        createDepCache()
+      )
 
       const cb = createWaitCallback(2, done)
       proxy.emitter.on('init', cb)
@@ -256,11 +307,14 @@ describe('Using browsersync', () => {
     })
 
     it('fallbacks to proxy if the request does not match base path', done => {
-      http.get(reqTo('/sources/index.html'), waitForData((res, data) => {
-        expect(res.statusCode).toBe(200)
-        expectDataToBeFile(data, 'sources/index.html')
-        done()
-      }))
+      http.get(
+        reqTo('/sources/index.html'),
+        waitForData((res, data) => {
+          expect(res.statusCode).toBe(200)
+          expectDataToBeFile(data, 'sources/index.html')
+          done()
+        })
+      )
     })
   })
 
@@ -269,30 +323,40 @@ describe('Using browsersync', () => {
     beforeEach(done => {
       callCount = 0
 
-      const cacheConfig = Config.create({
-        input: '',
-        output: 'dist',
-        rules: {
-          js: 'js'
+      const cacheConfig = Config.create(
+        {
+          input: '',
+          output: 'dist',
+          rules: {
+            js: 'js'
+          },
+          dev: {
+            port: 51234
+          }
         },
-        dev: {
-          port: 51234
-        }
-      }, {
-        js: stream => {
-          return stream.pipe(transform((file, encoding, callback) => {
-            callCount += 1
-            const source = file.contents.toString()
-            file.contents = Buffer.from('**transformed**\n' + source)
-            callback(null, file)
-          }))
-        }
-      }, { base })
+        {
+          js: stream => {
+            return stream.pipe(
+              transform((file, encoding, callback) => {
+                callCount += 1
+                const source = file.contents.toString()
+                file.contents = Buffer.from('**transformed**\n' + source)
+                callback(null, file)
+              })
+            )
+          }
+        },
+        { base }
+      )
 
-      bs = create(cacheConfig, {
-        open: false,
-        logLevel: 'silent'
-      }, createDepCache())
+      bs = create(
+        cacheConfig,
+        {
+          open: false,
+          logLevel: 'silent'
+        },
+        createDepCache()
+      )
 
       bs.emitter.on('init', done)
     })
@@ -307,27 +371,39 @@ describe('Using browsersync', () => {
     })
 
     it('caches response data and not transform multiple times', done => {
-      http.get(reqTo('/sources/index.js'), waitForData(() => {
-        expect(callCount).toBe(1)
-
-        http.get(reqTo('/sources/index.js'), waitForData(() => {
+      http.get(
+        reqTo('/sources/index.js'),
+        waitForData(() => {
           expect(callCount).toBe(1)
-          done()
-        }))
-      }))
+
+          http.get(
+            reqTo('/sources/index.js'),
+            waitForData(() => {
+              expect(callCount).toBe(1)
+              done()
+            })
+          )
+        })
+      )
     })
 
     it('updates the cache when the requested file was updated', done => {
-      http.get(reqTo('/sources/index.js'), waitForData(() => {
-        expect(callCount).toBe(1)
-        revertUpdate = updateFile('sources/index.js', 'alert("Hello")')
+      http.get(
+        reqTo('/sources/index.js'),
+        waitForData(() => {
+          expect(callCount).toBe(1)
+          revertUpdate = updateFile('sources/index.js', 'alert("Hello")')
 
-        http.get(reqTo('/sources/index.js'), waitForData((res, data) => {
-          expect(callCount).toBe(2)
-          expect(data.toString()).toBe('**transformed**\nalert("Hello")')
-          done()
-        }))
-      }))
+          http.get(
+            reqTo('/sources/index.js'),
+            waitForData((res, data) => {
+              expect(callCount).toBe(2)
+              expect(data.toString()).toBe('**transformed**\nalert("Hello")')
+              done()
+            })
+          )
+        })
+      )
     })
   })
 })

@@ -13,109 +13,136 @@ const assertStream = helpers.assertStream
 
 describe('ProcessTask Stream', () => {
   it('passes through files that does not match any rules', done => {
-    const config = Config.create({
-      rules: {
-        js: 'js'
+    const config = Config.create(
+      {
+        rules: {
+          js: 'js'
+        }
+      },
+      {
+        js: stream =>
+          stream.pipe(
+            transform((file, encoding, done) => {
+              done(new Error('Unexpected'))
+            })
+          )
       }
-    }, {
-      js: stream => stream.pipe(transform((file, encoding, done) => {
-        done(new Error('Unexpected'))
-      }))
-    })
+    )
 
-    source([
-      vinyl({ path: 'test.css', contents: '' })
-    ]).pipe(taskStream(config))
-      .pipe(assertStream([
-        vinyl({ path: 'test.css', contents: '' })
-      ]))
+    source([vinyl({ path: 'test.css', contents: '' })])
+      .pipe(taskStream(config))
+      .pipe(assertStream([vinyl({ path: 'test.css', contents: '' })]))
       .on('finish', done)
   })
 
   it('transforms file by matched task', done => {
-    const config = Config.create({
-      rules: {
-        es6: {
-          task: 'js',
-          outputExt: 'js'
-        },
-        scss: {
-          task: 'css',
-          outputExt: 'css'
+    const config = Config.create(
+      {
+        rules: {
+          es6: {
+            task: 'js',
+            outputExt: 'js'
+          },
+          scss: {
+            task: 'css',
+            outputExt: 'css'
+          }
         }
+      },
+      {
+        js: stream =>
+          stream.pipe(
+            transform((file, encoding, done) => {
+              file.contents = Buffer.from('es6: ' + file.contents)
+              done(null, file)
+            })
+          ),
+        css: stream =>
+          stream.pipe(
+            transform((file, encoding, done) => {
+              file.contents = Buffer.from('scss: ' + file.contents)
+              done(null, file)
+            })
+          )
       }
-    }, {
-      js: stream => stream.pipe(transform((file, encoding, done) => {
-        file.contents = Buffer.from('es6: ' + file.contents)
-        done(null, file)
-      })),
-      css: stream => stream.pipe(transform((file, encoding, done) => {
-        file.contents = Buffer.from('scss: ' + file.contents)
-        done(null, file)
-      }))
-    })
+    )
 
     source([
       vinyl({ path: 'test.es6', contents: 'const test = "es6"' }),
       vinyl({ path: 'test.scss', contents: '.foo {}' })
-    ]).pipe(taskStream(config))
-      .pipe(assertStream([
-        vinyl({ path: 'test.js', contents: 'es6: const test = "es6"' }),
-        vinyl({ path: 'test.css', contents: 'scss: .foo {}' })
-      ]))
+    ])
+      .pipe(taskStream(config))
+      .pipe(
+        assertStream([
+          vinyl({ path: 'test.js', contents: 'es6: const test = "es6"' }),
+          vinyl({ path: 'test.css', contents: 'scss: .foo {}' })
+        ])
+      )
       .on('finish', done)
   })
 
   it('ignores files that is matched with exclude option', done => {
-    const config = Config.create({
-      rules: {
-        es6: {
-          task: 'js',
-          outputExt: 'js',
-          exclude: '**/vendor/**'
+    const config = Config.create(
+      {
+        rules: {
+          es6: {
+            task: 'js',
+            outputExt: 'js',
+            exclude: '**/vendor/**'
+          }
         }
+      },
+      {
+        js: stream =>
+          stream.pipe(
+            transform((file, encoding, done) => {
+              file.contents = Buffer.from('es6: ' + file.contents)
+              done(null, file)
+            })
+          )
       }
-    }, {
-      js: stream => stream.pipe(transform((file, encoding, done) => {
-        file.contents = Buffer.from('es6: ' + file.contents)
-        done(null, file)
-      }))
-    })
+    )
 
     source([
       vinyl({ path: 'test.es6', contents: 'const test = "test"' }),
       vinyl({ path: 'vendor/test.es6', contents: 'const test = "vendor"' })
-    ]).pipe(taskStream(config))
-      .pipe(assertStream([
-        vinyl({ path: 'test.js', contents: 'es6: const test = "test"' }),
-        vinyl({ path: 'vendor/test.es6', contents: 'const test = "vendor"' })
-      ]))
+    ])
+      .pipe(taskStream(config))
+      .pipe(
+        assertStream([
+          vinyl({ path: 'test.js', contents: 'es6: const test = "test"' }),
+          vinyl({ path: 'vendor/test.es6', contents: 'const test = "vendor"' })
+        ])
+      )
       .on('finish', done)
   })
 
   it('transforms extname after executing task', done => {
     let called = false
-    const config = Config.create({
-      rules: {
-        es6: {
-          task: 'js',
-          outputExt: 'js'
+    const config = Config.create(
+      {
+        rules: {
+          es6: {
+            task: 'js',
+            outputExt: 'js'
+          }
         }
+      },
+      {
+        js: stream =>
+          stream.pipe(
+            transform((file, encoding, done) => {
+              expect(file.extname).toBe('.es6')
+              called = true
+              done(null, file)
+            })
+          )
       }
-    }, {
-      js: stream => stream.pipe(transform((file, encoding, done) => {
-        expect(file.extname).toBe('.es6')
-        called = true
-        done(null, file)
-      }))
-    })
+    )
 
-    source([
-      vinyl({ path: 'test.es6' })
-    ]).pipe(taskStream(config))
-      .pipe(assertStream([
-        vinyl({ path: 'test.js' })
-      ]))
+    source([vinyl({ path: 'test.es6' })])
+      .pipe(taskStream(config))
+      .pipe(assertStream([vinyl({ path: 'test.js' })]))
       .on('finish', () => {
         expect(called).toBe(true)
         done()
@@ -124,45 +151,56 @@ describe('ProcessTask Stream', () => {
 
   // #19
   it('hanldes filtering tasks', done => {
-    const config = Config.create({
-      rules: {
-        js: 'js'
-      }
-    }, {
-      js: stream => stream.pipe(transform(function (file, encoding, done) {
-        if (file.path.indexOf('exclude') < 0) {
-          this.push(file)
+    const config = Config.create(
+      {
+        rules: {
+          js: 'js'
         }
-        done()
-      }))
-    })
+      },
+      {
+        js: stream =>
+          stream.pipe(
+            transform(function(file, encoding, done) {
+              if (file.path.indexOf('exclude') < 0) {
+                this.push(file)
+              }
+              done()
+            })
+          )
+      }
+    )
 
     source([
       vinyl({ path: 'foo.js' }),
       vinyl({ path: 'exclude.js' }),
       vinyl({ path: 'bar.js' })
-    ]).pipe(taskStream(config))
-      .pipe(assertStream([
-        vinyl({ path: 'foo.js' }),
-        vinyl({ path: 'bar.js' })
-      ]))
+    ])
+      .pipe(taskStream(config))
+      .pipe(
+        assertStream([vinyl({ path: 'foo.js' }), vinyl({ path: 'bar.js' })])
+      )
       .on('finish', done)
   })
 
   it('handles task errors', done => {
-    const config = Config.create({
-      rules: {
-        js: 'js'
+    const config = Config.create(
+      {
+        rules: {
+          js: 'js'
+        }
+      },
+      {
+        js: stream =>
+          stream.pipe(
+            transform((file, encoding, done) => {
+              done(new Error('Test Error'))
+            })
+          )
       }
-    }, {
-      js: stream => stream.pipe(transform((file, encoding, done) => {
-        done(new Error('Test Error'))
-      }))
-    })
+    )
 
-    source([
-      vinyl({ path: 'error.js' })
-    ]).pipe(taskStream(config))
+    source([vinyl({ path: 'error.js' })])
+      .pipe(taskStream(config))
       .on('error', err => {
         expect(err).toEqual(new Error('Test Error'))
         done()
@@ -170,17 +208,23 @@ describe('ProcessTask Stream', () => {
   })
 
   it('should teardown internal stream and itself in correct order', done => {
-    const config = Config.create({
-      rules: {
-        js: 'js'
+    const config = Config.create(
+      {
+        rules: {
+          js: 'js'
+        }
+      },
+      {
+        js: stream =>
+          stream.pipe(
+            transform((file, encoding, done) => {
+              setTimeout(() => {
+                done(null, file)
+              }, 0)
+            })
+          )
       }
-    }, {
-      js: stream => stream.pipe(transform((file, encoding, done) => {
-        setTimeout(() => {
-          done(null, file)
-        }, 0)
-      }))
-    })
+    )
 
     const spy = td.function()
     const data = vinyl({ path: 'test.js' })
@@ -188,7 +232,9 @@ describe('ProcessTask Stream', () => {
     source([data])
       .pipe(taskStream(config))
       .on('data', spy)
-      .on('error', err => { throw err })
+      .on('error', err => {
+        throw err
+      })
       .on('end', () => {
         td.verify(spy(data), { times: 1 })
         done()

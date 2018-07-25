@@ -8,7 +8,9 @@ const exec = (file, nodeEnv) => {
   const env = Object.create(process.env)
   env.NODE_ENV = nodeEnv
 
-  return execSync('node ' + p(file), { env }).toString().trim()
+  return execSync('node ' + p(file), { env })
+    .toString()
+    .trim()
 }
 
 describe('Node API', () => {

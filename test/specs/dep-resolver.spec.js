@@ -8,9 +8,7 @@ describe('DepResolver', () => {
 
     // origin.js -depends-> dep.js
     r.register('/path/to/origin.js', '')
-    expect(r.getInDeps('/path/to/dep.js')).toEqual([
-      '/path/to/origin.js'
-    ])
+    expect(r.getInDeps('/path/to/dep.js')).toEqual(['/path/to/origin.js'])
 
     // origin.js  -depends--> dep.js
     // another.js -depends-^
@@ -27,9 +25,7 @@ describe('DepResolver', () => {
     r.register('/path/to/origin.js', '')
     r.register('/path/to/origin.js', '')
 
-    expect(r.getInDeps('/path/to/dep.js')).toEqual([
-      '/path/to/origin.js'
-    ])
+    expect(r.getInDeps('/path/to/dep.js')).toEqual(['/path/to/origin.js'])
   })
 
   it('clears provided file', () => {
@@ -78,11 +74,7 @@ describe('DepResolver', () => {
     r.register('/c.js', '/b.js')
     r.register('/b.js', '/d.js')
 
-    expect(r.getInDeps('/d.js')).toEqual([
-      '/b.js',
-      '/a.js',
-      '/c.js'
-    ])
+    expect(r.getInDeps('/d.js')).toEqual(['/b.js', '/a.js', '/c.js'])
   })
 
   it('handles circlar dependencies', () => {
@@ -93,10 +85,7 @@ describe('DepResolver', () => {
     r.register('/b.js', '/c.js')
     r.register('/c.js', '/a.js')
 
-    expect(r.getInDeps('/a.js')).toEqual([
-      '/c.js',
-      '/b.js'
-    ])
+    expect(r.getInDeps('/a.js')).toEqual(['/c.js', '/b.js'])
   })
 
   it('overwrites the dependencies of the file having the same name', () => {
@@ -106,18 +95,11 @@ describe('DepResolver', () => {
     // bar -^
     r.register('/foo.js', '/test.js')
     r.register('/bar.js', '/test.js')
-    expect(r.getInDeps('/test.js')).toEqual([
-      '/foo.js',
-      '/bar.js'
-    ])
+    expect(r.getInDeps('/test.js')).toEqual(['/foo.js', '/bar.js'])
 
     r.register('/foo.js', '/test2.js')
-    expect(r.getInDeps('/test.js')).toEqual([
-      '/bar.js'
-    ])
-    expect(r.getInDeps('/test2.js')).toEqual([
-      '/foo.js'
-    ])
+    expect(r.getInDeps('/test.js')).toEqual(['/bar.js'])
+    expect(r.getInDeps('/test2.js')).toEqual(['/foo.js'])
   })
 
   it('returns empty array if target is not registered', () => {
@@ -134,10 +116,7 @@ describe('DepResolver', () => {
     r.register('/c.js', '/b.js')
     r.register('/b.js', '/d.js')
 
-    expect(r.getOutDeps('/a.js')).toEqual([
-      '/b.js',
-      '/d.js'
-    ])
+    expect(r.getOutDeps('/a.js')).toEqual(['/b.js', '/d.js'])
   })
 
   it('serializes deps', () => {
@@ -163,9 +142,6 @@ describe('DepResolver', () => {
       '/bar.js': ['/baz.js']
     })
 
-    expect(r.getInDeps('/baz.js')).toEqual([
-      '/foo.js',
-      '/bar.js'
-    ])
+    expect(r.getInDeps('/baz.js')).toEqual(['/foo.js', '/bar.js'])
   })
 })
