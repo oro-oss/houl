@@ -1,6 +1,4 @@
 module.exports = {
-  base: '/houl/',
-
   locales: {
     '/': {
       lang: 'en-US',
