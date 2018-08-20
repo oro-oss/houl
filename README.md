@@ -8,7 +8,7 @@ Full-contained static site workflow
 
 ## Documentation
 
-You can read Houl documentation on [https://houl.netlify.com/](https://houl.netlify.com/)
+You can read Houl documentation on [https://houl.katashin.info/](https://houl.katashin.info/)
 
 ## License
 
