@@ -30,6 +30,8 @@
     "test": "npm run lint && npm run test:unit && npm run test:e2e",
     "test:unit": "jasmine TEST=1 JASMINE_CONFIG_PATH=test/jasmine-unit.json",
     "test:e2e": "node test/e2e/setup.js && jasmine TEST=1 JASMINE_CONFIG_PATH=test/jasmine-e2e.json",
+    "docs": "vuepress dev docs",
+    "docs:build": "vuepress build docs",
     "release": "./release.sh"
   },
   "devDependencies": {
@@ -42,7 +44,8 @@
     "normalize-path": "^3.0.0",
     "prettier": "^1.13.7",
     "prettier-config-ktsn": "^1.0.0",
-    "testdouble": "^3.8.1"
+    "testdouble": "^3.8.1",
+    "vuepress": "^0.14.2"
   },
   "dependencies": {
     "browser-sync": "^2.24.6",
