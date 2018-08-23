@@ -26,7 +26,6 @@ module.exports = {
         sidebar: {
           '/guide/': [
             '',
-            'installation',
             'command',
             'config',
             'task'
@@ -45,7 +44,6 @@ module.exports = {
         sidebar: {
           '/ja/guide/': [
             '',
-            'installation',
             'command',
             'config',
             'task'
