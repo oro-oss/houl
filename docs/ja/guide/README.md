@@ -1,40 +1,33 @@
-# 概要
+# はじめに
 
-Houl は静的サイトコーディングの共通ワークフローを単純化するために作られています。例えば、`gulpfile.js` にソースをコンパイルし、開発サーバーをたて、変更をウォッチするようなタスクを書くと以下のようになると思います。
+Houl は静的サイトコーディングの共通ワークフローを単純にするために作られています。カスタマイズ可能なタスクでソースファイルをビルドしたり、変更をウォッチしたり、開発サーバーを立てたりできます。
 
-```js
-const gulp = require('gulp')
-const pug = require('gulp-pug')
-const sass = require('gulp-sass')
-const bs = require('browser-sync').create()
+Houl は共通のワークフローを自身の機能として抽象化しているので、設定ファイルが複雑になってイライラすることはもうありません。ファイルをどのように変換するか、どのファイルにそれを適用するかということだけを定義すればよいです。
 
-gulp.task('pug', () => {
-  return gulp.src('src/**/*.pug')
-    .pipe(pug())
-    .pipe(gulp.dest('dist'))
-    .pipe(bs.stream())
-})
+## インストール
 
-gulp.task('sass', () => {
-  return gulp.src('src/styles/**/*.scss')
-    .pipe(sass())
-    .pipe(gulp.dest('dist/styles'))
-    .pipe(bs.stream())
-})
+npm から Houl をインストールします。
 
-gulp.task('serve', ['pug', 'sass'], () => {
-  bs.init({
-    server: 'dist'
-  })
+```bash
+# npm
+$ npm install -g houl
 
-  gulp.watch('src/**/*.pug', ['pug'])
-  gulp.watch('src/styles/**/*.scss', ['sass'])
-})
+# yarn
+$ yarn global add houl
 ```
 
-`gulpfile.js` は Web サイトが大きくなるに連れ複雑になっていきますが、Houl のタスクファイルは単純なままです。上記の `gulpfile.js` と同じことをする Houl のタスクファイルは以下のようになります。
+## 単純な例
+
+Houl で `.pug` や `.scss` をどのように変換するかを見ていきましょう。初めに依存関係をインストールします。
+
+```bash
+$ npm install -D gulp-pug gulp-sass
+```
+
+次に、それぞれのファイルをどのように変換するかを定義したタスクファイル (`houl.task.js`) を書きます。
 
 ```js
+// houl.task.js
 const pug = require('gulp-pug')
 const sass = require('gulp-sass')
 
@@ -47,7 +40,27 @@ exports.sass = stream => {
 }
 ```
 
-このように単純なのは、Houl が自動的に開発サーバーの制御とウォッチを行うからです。重要なのは Houl タスクファイルの中では任意の Gulp プラグインを使えるという点です。なので、従来の Gulp を使ったワークフローから Houl に移行するのは簡単です。
+さらに、JSON の設定ファイル (`houl.config.json`) にソースコードのあるディレクトリ、出力先ディレクトリや、変換をどのファイルに適用するかを指定します。
 
-ここで説明したタスクファイル以外にもソース、出力先ディレクトリなどを指定するための設定ファイルも必要ですが、後の節で説明します。
+```json
+{
+  "input": "src",
+  "output": "dist",
+  "taskFile": "houl.task.js",
+  "rules": {
+    "pug": "pug",
+    "scss": {
+      "task": "sass",
+      "outputExt": "css"
+    }
+  }
+}
+```
 
+何らかのソースファイルを `src` ディレクトリに追加した後、次のコマンドでビルドします。出力は `dist` ディレクトリに入ります。
+
+```bash
+$ houl build
+```
+
+Houl は自動的に開発サーバーやファイル監視を扱ってくれるので、設定はとてもシンプルになります。重要な点として、任意の Gulp プラグインを Houl のタスクで使用できるということがあります。したがって、Gulp のワークフローを簡単に Houl に移行することができます。

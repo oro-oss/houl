@@ -1,40 +1,33 @@
-# Overview
+# Getting Started
 
-Houl is created for simplifying common workflows of static site coding. For example, you may setup your `gulpfile.js` that includes tasks to compile sources, start a dev server and watch source file changes:
+Houl is created for simplifying a common workflow of static site coding. It builds source files with customizable tasks, watches source changes and serves built files.
 
-```js
-const gulp = require('gulp')
-const pug = require('gulp-pug')
-const sass = require('gulp-sass')
-const bs = require('browser-sync').create()
+Since Houl abstracts the common workflow as its own feature, you will not be annoyed with complex config files any more. All you have to do is just declare how to transform each file and which file the transformation is applied.
 
-gulp.task('pug', () => {
-  return gulp.src('src/**/*.pug')
-    .pipe(pug())
-    .pipe(gulp.dest('dist'))
-    .pipe(bs.stream())
-})
+## Installation
 
-gulp.task('sass', () => {
-  return gulp.src('src/styles/**/*.scss')
-    .pipe(sass())
-    .pipe(gulp.dest('dist/styles'))
-    .pipe(bs.stream())
-})
+Install Houl from npm:
 
-gulp.task('serve', ['pug', 'sass'], () => {
-  bs.init({
-    server: 'dist'
-  })
+```bash
+# npm
+$ npm install -g houl
 
-  gulp.watch('src/**/*.pug', ['pug'])
-  gulp.watch('src/styles/**/*.scss', ['sass'])
-})
+# yarn
+$ yarn global add houl
 ```
 
-While the `gulpfile.js` will be complicated as your web site grows, the Houl task file can be kept simple. The Houl task file that will do the same things as the `gulpfile.js` is like below:
+## Simple Example
+
+Let's look into how to transform your `.pug` and `.scss` files with Houl. Install depedencies at first:
+
+```bash
+$ npm install -D gulp-pug gulp-sass
+```
+
+Then write a task file (`houl.task.js`) which you declare how to transform for each file:
 
 ```js
+// houl.task.js
 const pug = require('gulp-pug')
 const sass = require('gulp-sass')
 
@@ -47,6 +40,27 @@ exports.sass = stream => {
 }
 ```
 
-It is quite simple because Houl automatically handle a dev server and watching. The important thing is that you can use any Gulp plugins in a Houl task file. So you would easily migrate your Gulp workflow to Houl.
+You also specify a directory path of the source/destination and which file the transformation is applied in a config JSON file (`houl.config.json`):
 
-Note that you also need a config file to specify a directory path of source/destination and so on. You will learn about the config file on the later sections.
+```json
+{
+  "input": "src",
+  "output": "dist",
+  "taskFile": "houl.task.js",
+  "rules": {
+    "pug": "pug",
+    "scss": {
+      "task": "sass",
+      "outputExt": "css"
+    }
+  }
+}
+```
+
+Build the `src` directory after adding some source files by following command. The output is in `dist` directory:
+
+```bash
+$ houl build
+```
+
+The configurations are quite simple because Houl automatically handle a dev server and watching. The important thing is that you can use any Gulp plugins in a Houl task file. So you would easily migrate your Gulp workflow to Houl.
