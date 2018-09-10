@@ -1,67 +1,111 @@
 version: 2
 
-defaults: &defaults
-  working_directory: ~/working/repo
+node-8: &node-8
+  working_directory: ~/working/node-8
   docker:
     - image: circleci/node:8
 
+node-10: &node-10
+  working_directory: ~/working/node-10
+  docker:
+    - image: circleci/node:10
+
+install: &install
+  steps:
+    - checkout
+
+    # Download and cache dependencies
+    - restore_cache:
+        keys:
+          - v2-dependencies-{{ checksum "package-lock.json" }}
+          # fallback to using the latest cache if no exact match is found
+          - v2-dependencies-
+
+    - run: npm install
+
+    - save_cache:
+        paths:
+          - node_modules
+        key: v2-dependencies-{{ checksum "package-lock.json" }}
+
+    - persist_to_workspace:
+        root: ~/working
+        paths:
+          - node-8
+          - node-10
+
+lint: &lint
+  steps:
+    - attach_workspace:
+        at: ~/working
+    - run: npm run lint
+
+test-unit: &test-unit
+  steps:
+    - attach_workspace:
+        at: ~/working
+    - run: npm run test:unit
+
+test-e2e: &test-e2e
+  steps:
+    - attach_workspace:
+        at: ~/working
+    - run: npm run test:e2e
+
 jobs:
-  install:
-    <<: *defaults
-    steps:
-      - checkout
+  node-8-install:
+    <<: *node-8
+    <<: *install
 
-      # Download and cache dependencies
-      - restore_cache:
-          keys:
-            - v2-dependencies-{{ checksum "package-lock.json" }}
-            # fallback to using the latest cache if no exact match is found
-            - v2-dependencies-
+  node-8-lint:
+    <<: *node-8
+    <<: *lint
 
-      - run: npm install
+  node-8-test-unit:
+    <<: *node-8
+    <<: *test-unit
 
-      - save_cache:
-          paths:
-            - node_modules
-          key: v2-dependencies-{{ checksum "package-lock.json" }}
+  node-8-test-e2e:
+    <<: *node-8
+    <<: *test-e2e
 
-      - persist_to_workspace:
-          root: ~/working
-          paths:
-            - repo
+  node-10-install:
+    <<: *node-10
+    <<: *install
 
-  lint:
-    <<: *defaults
-    steps:
-      - attach_workspace:
-          at: ~/working
-      - run: npm run lint
+  node-10-lint:
+    <<: *node-10
+    <<: *lint
 
-  test-unit:
-    <<: *defaults
-    steps:
-      - attach_workspace:
-          at: ~/working
-      - run: npm run test:unit
+  node-10-test-unit:
+    <<: *node-10
+    <<: *test-unit
 
-  test-e2e:
-    <<: *defaults
-    steps:
-      - attach_workspace:
-          at: ~/working
-      - run: npm run test:e2e
+  node-10-test-e2e:
+    <<: *node-10
+    <<: *test-e2e
 
 workflows:
   version: 2
   build_and_test:
     jobs:
-      - install
-      - lint:
+      - node-8-install
+      - node-8-lint:
           requires:
-            - install
-      - test-unit:
+            - node-8-install
+      - node-8-test-unit:
           requires:
-            - install
-      - test-e2e:
+            - node-8-install
+      - node-8-test-e2e:
           requires:
-            - install
+            - node-8-install
+      - node-10-install
+      - node-10-lint:
+          requires:
+            - node-10-install
+      - node-10-test-unit:
+          requires:
+            - node-10-install
+      - node-10-test-e2e:
+          requires:
+            - node-10-install
