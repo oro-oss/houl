@@ -1,0 +1,67 @@
+version: 2
+
+defaults: &defaults
+  working_directory: ~/working/repo
+  docker:
+    - image: circleci/node:8
+
+jobs:
+  install:
+    <<: *defaults
+    steps:
+      - checkout
+
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+            - v2-dependencies-{{ checksum "package-lock.json" }}
+            # fallback to using the latest cache if no exact match is found
+            - v2-dependencies-
+
+      - run: npm install
+
+      - save_cache:
+          paths:
+            - node_modules
+          key: v2-dependencies-{{ checksum "package-lock.json" }}
+
+      - persist_to_workspace:
+          root: ~/working
+          paths:
+            - repo
+
+  lint:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/working
+      - run: npm run lint
+
+  test-unit:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/working
+      - run: npm run test:unit
+
+  test-e2e:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/working
+      - run: npm run test:e2e
+
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - install
+      - lint:
+          requires:
+            - install
+      - test-unit:
+          requires:
+            - install
+      - test-e2e:
+          requires:
+            - install
