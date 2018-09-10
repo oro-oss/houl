@@ -31,7 +31,8 @@ install: &install
     - persist_to_workspace:
         root: ~/working
         paths:
-          - repo
+          - node-8
+          - node-10
 
 lint: &lint
   steps:
