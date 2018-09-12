@@ -20,7 +20,8 @@ module.exports = {
         label: 'English',
 
         nav: [
-          { text: 'User Guide', link: '/guide/' }
+          { text: 'User Guide', link: '/guide/' },
+          { text: 'GitHub', link: 'https://github.com/oro-oss/houl' }
         ],
 
         sidebar: {
@@ -38,7 +39,8 @@ module.exports = {
         label: '日本語',
 
         nav: [
-          { text: 'ユーザーガイド', link: '/ja/guide/' }
+          { text: 'ユーザーガイド', link: '/ja/guide/' },
+          { text: 'GitHub', link: 'https://github.com/oro-oss/houl' }
         ],
 
         sidebar: {
