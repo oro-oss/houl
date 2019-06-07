@@ -1,6 +1,6 @@
 {
   "name": "houl",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Full-contained static site workflow",
   "main": "lib/api.js",
   "bin": "bin/houl.js",
