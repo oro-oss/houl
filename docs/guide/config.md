@@ -2,31 +2,31 @@
 
 Houl config file can be `.json` or `.js` that exports config object. It specifies the project source/destination directory, the way how it transforms sources and so on. Available options are following:
 
-Key            | Description
--------------- | --------------------------------------------------------
-input          | Path to source directory
-output         | Path to destination directory
-exclude        | Glob pattern(s) of files that will be ignored from input
-taskFile       | Path to task file that is described in the later section
-preset         | Preset package name or an object that specify a preset
-preset.name    | Preset package name
-preset.options | Preset options
-rules          | Specify how to transform source files
-dev            | Dev server related options (See [Dev options](#dev-options) for details)
+| Key            | Description                                                              |
+| -------------- | ------------------------------------------------------------------------ |
+| input          | Path to source directory                                                 |
+| output         | Path to destination directory                                            |
+| exclude        | Glob pattern(s) of files that will be ignored from input                 |
+| taskFile       | Path to task file that is described in the later section                 |
+| preset         | Preset package name or an object that specify a preset                   |
+| preset.name    | Preset package name                                                      |
+| preset.options | Preset options                                                           |
+| rules          | Specify how to transform source files                                    |
+| dev            | Dev server related options (See [Dev options](#dev-options) for details) |
 
 ## Rules
 
 You can specify the way how to transform the source files by _rules_. The `rules` field in config file should be an object and its keys indicate target extensions for transformation. For example, if you want to transform `.js` files, you should add `js` field in `rules` object.
 
-Each field in `rules` object can be an object or a string. If string is specified, it will be treated as `task`.
+Each field in `rules` object can be an object, a string or a function. If string or function is specified, it will be treated as `task`.
 
-Key       | Description
---------- | -----------------------------------------------------------------------------------------------------------
-task      | Task name that will apply transformations
-outputExt | Extension of output files. If omitted, it is same as input files' extensions.
-exclude   | Glob pattern(s) of files that will not be applied the rule
-progeny   | Specify [progeny configs](https://github.com/es128/progeny#configuration) for the corresponding file format
-options   | Options for the corresponding task that is passed to the 2nd argument of the task
+| Key       | Description                                                                                                 |
+| --------- | ----------------------------------------------------------------------------------------------------------- |
+| task      | Task name or inline task that will apply transformations                                                    |
+| outputExt | Extension of output files. If omitted, it is same as input files' extensions.                               |
+| exclude   | Glob pattern(s) of files that will not be applied the rule                                                  |
+| progeny   | Specify [progeny configs](https://github.com/es128/progeny#configuration) for the corresponding file format |
+| options   | Options for the corresponding task that is passed to the 2nd argument of the task                           |
 
 ## Preset
 
@@ -134,11 +134,11 @@ module.exports = {
 
 You can provide dev server related options via `dev` field. The `dev` field has an object which can include the following properties.
 
-Key      | Description
--------- | ---
-proxy    | Proxy configurations which is compatible with [`node-http-proxy` options](https://github.com/nodejitsu/node-http-proxy#options).
-port     | Port number of the dev server as same as the `--port` cli option.
-basePath | Base path of the dev server as same as the `--base-path` cli option.
+| Key      | Description                                                                                                                      |
+| -------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| proxy    | Proxy configurations which is compatible with [`node-http-proxy` options](https://github.com/nodejitsu/node-http-proxy#options). |
+| port     | Port number of the dev server as same as the `--port` cli option.                                                                |
+| basePath | Base path of the dev server as same as the `--base-path` cli option.                                                             |
 
 The below is an example of `proxy` configuration:
 

@@ -9,17 +9,42 @@ const babel = require('gulp-babel')
 const sass = require('gulp-sass')
 
 exports.scripts = stream => {
-  return stream
-    .pipe(babel())
+  return stream.pipe(babel())
 }
 
 exports.styles = (stream, options) => {
-  return stream
-    .pipe(sass(options.sass))
+  return stream.pipe(sass(options.sass))
 }
 ```
 
 Note that the exported name is used on config file (e.g. If you write `exports.scripts`, you can refer it as `"scripts"` task in the config file).
+
+## Inline Task
+
+You can also write task function in config file directory. `task` option in rule objects can receive task function:
+
+```javascript
+const babel = require('gulp-babel')
+const sass = require('gulp-sass')
+
+module.exports = options => {
+  return {
+    rules: {
+      js: {
+        task: stream => {
+          return stream.pipe(babel())
+        }
+      },
+      scss: {
+        task: stream => {
+          return stream.pipe(sass(options.sass))
+        },
+        outputExt: 'css'
+      }
+    }
+  }
+}
+```
 
 ## Task Helpers
 

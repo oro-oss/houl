@@ -170,6 +170,19 @@ describe('Rule model', () => {
     }).toThrowError(/Task "foo" is not defined/)
   })
 
+  it('accepts inline task', () => {
+    const r = Rule.create(
+      {
+        task: () => 'pass'
+      },
+      'js',
+      {}
+    )
+
+    expect(r.taskName).toBe('<inline task>')
+    expect(r.task()).toBe('pass')
+  })
+
   describe('Empty rule', () => {
     const empty = Rule.empty
 
