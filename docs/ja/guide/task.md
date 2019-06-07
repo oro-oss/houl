@@ -2,24 +2,49 @@
 
 タスクファイルにはソースコードが Houl によってどのように変換されるかを定義します。特筆すべき点は、タスクファイルは任意の [Gulp](http://gulpjs.com/) プラグインと互換性を持っているという点です。これは Houl で潤沢な Gulp のエコシステムを活用することができることを意味します。
 
-タスクファイルはいくつかの関数をエクスポートする `.js` ファイルです。エクポートされる関数はソースコードが送られるストリームを受け取るので、それをパイプして変換を行ったストリームを返す必要があります。第2引数には設定ファイルの各ルールに指定されたオプションの値が渡されます。任意の Gulp プラグインを使ってストリームをパイプできます。
+タスクファイルはいくつかの関数をエクスポートする `.js` ファイルです。エクポートされる関数はソースコードが送られるストリームを受け取るので、それをパイプして変換を行ったストリームを返す必要があります。第 2 引数には設定ファイルの各ルールに指定されたオプションの値が渡されます。任意の Gulp プラグインを使ってストリームをパイプできます。
 
 ```javascript
 const babel = require('gulp-babel')
 const sass = require('gulp-sass')
 
 exports.scripts = stream => {
-  return stream
-    .pipe(babel())
+  return stream.pipe(babel())
 }
 
 exports.styles = (stream, options) => {
-  return stream
-    .pipe(sass(options.sass))
+  return stream.pipe(sass(options.sass))
 }
 ```
 
 エクスポートする名前は設定ファイル内で使われます (例えば、`exports.scripts` と書いたら、設定ファイル内では `"scripts"` タスクとして使用することができます)。
+
+## インラインタスク
+
+タスクの関数を設定ファイル内に直接書くこともできます。ルールオブジェクト内の `task` オプションはタスク関数も受け取れます:
+
+```javascript
+const babel = require('gulp-babel')
+const sass = require('gulp-sass')
+
+module.exports = options => {
+  return {
+    rules: {
+      js: {
+        task: stream => {
+          return stream.pipe(babel())
+        }
+      },
+      scss: {
+        task: stream => {
+          return stream.pipe(sass(options.sass))
+        },
+        outputExt: 'css'
+      }
+    }
+  }
+}
+```
 
 ## タスクヘルパー
 
