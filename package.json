@@ -45,7 +45,7 @@
     "prettier": "^1.18.0",
     "prettier-config-ktsn": "^1.0.0",
     "testdouble": "^3.11.0",
-    "vuepress": "^0.14.11"
+    "vuepress": "^1.9.10"
   },
   "dependencies": {
     "browser-sync": "^2.26.5",
